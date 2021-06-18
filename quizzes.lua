@@ -94,6 +94,19 @@ end
 
 local function check(playerName, answer, quiz)
   print('TCL:: ~ file: quizzes.lua ~ line 83 ~ check - playerName, answer, quiz', playerName, answer, quiz);
+  if not quiz and not answer then
+    -- check whether it's idletime if no provide answer
+    local idletime = settings.idleInterval
+    if (idletime) then
+      idletime = idletime * 60
+      local lasttime = lastAnswered[playerName] or 0
+      if lasttime ~= 0 then
+        lasttime = os.time() - lasttime
+        print('TCL:: ~ file: quizzes.lua ~ line 142 ~ check: lasttime', idletime, lasttime);
+        if (lasttime <= idletime) then return nil end
+      end
+    end
+  end
   local player = playerName
   if type(player) == "string" then
     player = minetest.get_player_by_name(player)
@@ -133,7 +146,6 @@ local function check(playerName, answer, quiz)
         attrs:set_int(wrongName, wrong)
         return false
       end
-    -- else -- check whether it's idletime if no provide answer
     end
   end
   return quiz, errmsg
