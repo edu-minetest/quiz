@@ -1,0 +1,15 @@
+# totalPlayTime unit is minute
+totalPlayTime: 30
+# Whether skip the question which has already be answered correctly.
+skipAnswered: 1
+# checkInterval unit is seconds
+checkInterval: 10
+# idleInterval unit is minute
+idleInterval: 5
+quiz:
+  - id: favorColor
+    title: "What's my favor color?"
+    answer: red
+  - id: theYear
+  - title: "What's the year?"
+    answer: 2021
