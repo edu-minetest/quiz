@@ -1,4 +1,5 @@
 -- play_challenge/init.lua
+print( "Loading play_challenge Mod" )
 
 local MOD_NAME = minetest.get_current_modname()
 local MOD_PATH = minetest.get_modpath(MOD_NAME) .. "/"
@@ -10,14 +11,14 @@ local S = minetest.get_translator(MOD_NAME)
 local esc = minetest.formspec_escape
 
 --< debug only
-dump = require 'pl.pretty'.dump
+-- dump = require 'pl.pretty'.dump
 
 local settings = yaml.readConfig("config.yml", MOD_PATH)
 -- print(dump(mod_setting));
 
 play_challenge = rawget(_G, MOD_NAME) or {}
 play_challenge.MOD_NAME = MOD_NAME
-play_challenge.modpath = MOD_PATH
+play_challenge.MOD_PATH = MOD_PATH
 play_challenge.settings = settings
 -- play_challenge.mod_settings = mod_settings
 -- play_challenge.world_settings = world_settings
@@ -37,8 +38,8 @@ local dialogClosed = true
 
 local function get_formspec(player_name, title, desc)
   local text = esc(S("Hi @1, the challenge begins!", player_name))
-  title = esc(title)
-  if desc then desc = esc(desc) end
+  title = esc(title or "")
+  if desc then desc = esc(desc or "") end
   local formspec = {
     "formspec_version[4]",
     "size[8,6]",
@@ -82,6 +83,7 @@ local function showHud(player, id, offset, text)
 end
 
 local function hudcheck(pname)
+  if not pname then return end
   pname = type(pname) == "string" and pname or pname:get_player_name()
   minetest.after(0, function()
       local player = minetest.get_player_by_name(pname)
@@ -116,35 +118,44 @@ local function hudcheck(pname)
 end
 
 minetest.register_on_leaveplayer(function(player)
-    huds[player:get_player_name()] = nil
+  local playerName = player:get_player_name()
+    huds[playerName] = nil
+    print(S("@1 has leaved", playerName))
+    minetest.chat_send_all(S("@1 has leaved", playerName))
 end)
 
 local function revokePriv(playerName)
-  local grant = minetest.string_to_privs(settings.grant or "interact")
+  -- local grant = minetest.string_to_privs(settings.grant or "interact,shout")
   local privs = minetest.get_player_privs(playerName)
-  for priv in pairs(grant) do
-    privs[priv] = false
-    minetest.run_priv_callbacks(playerName, priv, playerName, "revoke")
+  print('TCL:: ~ file: init.lua ~ line 139 ~ revokePrivs', playerName, dump(privs));
+  if #privs then
+    for priv in pairs(privs) do
+      privs[priv] = nil
+      -- minetest.run_priv_callbacks(playerName, priv, playerName, "revoke")
+    end
+    minetest.set_player_privs(playerName, privs)
+    privs = minetest.get_player_privs(playerName)
+    print('TCL:: ~ file: init.lua ~ line 139 ~ revokePrivs result', playerName, dump(privs));
+    hudcheck(playerName)
   end
-  minetest.set_player_privs(playerName, privs)
-  print('TCL:: ~ file: init.lua ~ line 130 ~ revokePrivs', dump(privs));
-  hudcheck(playerName)
 end
 
 local function grantPriv(playerName)
-  local grant = minetest.string_to_privs(settings.grant or "interact")
+  local grant = minetest.string_to_privs(settings.grant or "interact,shout")
   local privs = minetest.get_player_privs(playerName)
   for priv in pairs(grant) do
     privs[priv] = true
-    minetest.run_priv_callbacks(playerName, priv, playerName, "grant")
+    -- minetest.run_priv_callbacks(playerName, priv, playerName, "grant")
   end
   minetest.set_player_privs(playerName, privs)
+  print('TCL:: ~ file: init.lua ~ line 139 ~ grantPrivs', dump(privs));
   hudcheck(playerName)
 end
 
-local function checkAnswer(aPlayer, answer, quiz)
-  local playerName = aPlayer:get_player_name()
-  local result, errmsg = quizzes.check(aPlayer, answer, quiz)
+local function checkAnswer(playerName, answer, quiz)
+  -- local playerName = aPlayer:get_player_name()
+  print('TCL:: ~ file: init.lua ~ line 155 ~ checkAnswer -> playerName', playerName);
+  local result, errmsg = quizzes.check(playerName, answer, quiz)
   print('TCL:: ~ file: init.lua ~ line 144 ~ checkAnswer result', result);
   if errmsg then
     if result then
@@ -171,9 +182,10 @@ local function checkAnswer(aPlayer, answer, quiz)
   return result, errmsg
 end
 
-local function openQuizView(aPlayer)
-  local playerName = aPlayer:get_player_name()
-  local quiz, errmsg = checkAnswer(aPlayer)
+local function openQuizView(playerName)
+  -- if (not aPlayer) then return end
+  -- local playerName = aPlayer:get_player_name()
+  local quiz, errmsg = checkAnswer(playerName)
 
   if quiz and errmsg then return end
   print('TCL:: ~ file: init.lua ~ line 112 ~ playerName', playerName);
@@ -181,13 +193,14 @@ local function openQuizView(aPlayer)
     print('TCL:: ~ file: init.lua ~ line 114 ~ onclose', playerName, dump(fields));
     if fields.quit == minetest.FORMSPEC_SIGTIME then
       local vQuiz, vErrmsg = quizzes.getCurrent(playerName)
-      if vErrmsg then
-        checkAnswer(aPlayer, fields.answer, vQuiz)
+      if vQuiz and not vErrmsg then
+        minetest.update_form(playerName, get_formspec(playerName, vQuiz.title, vQuiz.desc))
+        return
       end
-    else
-      checkAnswer(aPlayer, fields.answer, quiz)
+      -- local result = checkAnswer(playerName, fields.answer, vQuiz)
     end
-
+    dialogClosed = true
+    checkAnswer(playerName, fields.answer, quiz)
     --   minetest.update_form(playerName, get_formspec(playerName, quiz.title, quiz.desc))
     -- elseif fields.answer and quiz.answer == fields.answer then
     --   minetest.get_form_timer(playerName).stop()
@@ -196,23 +209,28 @@ local function openQuizView(aPlayer)
     --   minetest.get_form_timer(playerName).start(1)
     -- end
   end
-  dialogClosed = false
-  minetest.create_form(nil, playerName, get_formspec(playerName, quiz.title, quiz.desc), on_close)
-  -- minetest.get_form_timer(playerName).start(1)
-  return true
+  if (type(quiz) == "table") then
+    dialogClosed = false
+    minetest.create_form(nil, playerName, get_formspec(playerName, quiz.title, quiz.desc), on_close)
+    -- minetest.get_form_timer(playerName).start(1)
+    return true
+  end
 end
 
 minetest.register_on_joinplayer(function(player)
-  -- local playerName = player:get_player_name()
+  local playerName = player:get_player_name()
   -- local checkInterval = settings.checkInterval
+  print("register_on_joinplayer:", playerName, settings.checkInterval)
 
   local function doCheck()
     local checkInterval = settings.checkInterval
+    print("doCheck interval:", checkInterval)
 
-    hudcheck(player)
-    if (dialogClosed) then openQuizView(player) end
+    if (player) then hudcheck(playerName) end
+    if (dialogClosed and player) then openQuizView(playerName) end
 
-    if checkInterval > 0 then
+
+    if (checkInterval > 0) and (minetest.is_singleplayer() or minetest.get_player_ip(playerName)) then
       -- execute after checkInterval seconds
       minetest.after(checkInterval, doCheck)
     end
@@ -222,8 +240,8 @@ minetest.register_on_joinplayer(function(player)
     minetest.after(0, doCheck)
   else
     minetest.after(0, function()
-      hudcheck(player)
-      openQuizView(player)
+      hudcheck(playerName)
+      openQuizView(playerName)
     end)
   end
 
