@@ -34,7 +34,8 @@ skipAnswered: false
 checkInterval: 10
 # idleInterval unit is minute
 idleInterval: 5
-hashkey: YoUHaShKeYHeRe
+# the default permissions to revoke or grant
+grant: "interact,basic_privs"
 quiz:
   - id: "optional Id"
     title: "Howto do?"
