@@ -3,7 +3,7 @@ totalPlayTime: 30
 # Whether skip the question which has already be answered correctly.
 skipAnswered: 1
 # checkInterval unit is seconds
-checkInterval: 10
+checkInterval: 60
 # idleInterval unit is minute
 idleInterval: 5
 quiz:
