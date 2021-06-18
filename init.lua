@@ -27,6 +27,9 @@ play_challenge.current = 0
 -- play_challenge.quiz = {}  ---- the quiz list
 play_challenge.get_translator = S
 
+local giveItem = dofile(MOD_PATH.."give_item.lua")
+local isOnline = dofile(MOD_PATH.."is_online.lua")
+
 -- LUALOCALS < ---------------------------------------------------------
 local minetest, pairs, type
     = minetest, pairs, type
@@ -143,13 +146,17 @@ end
 local function grantPriv(playerName)
   local grant = minetest.string_to_privs(settings.grant or "interact,shout")
   local privs = minetest.get_player_privs(playerName)
+  local needUpdate = false
   for priv in pairs(grant) do
+    if not privs[priv] then needUpdate = true end
     privs[priv] = true
     -- minetest.run_priv_callbacks(playerName, priv, playerName, "grant")
   end
-  minetest.set_player_privs(playerName, privs)
-  print('TCL:: ~ file: init.lua ~ line 139 ~ grantPrivs', dump(privs));
-  hudcheck(playerName)
+  if needUpdate then
+    minetest.set_player_privs(playerName, privs)
+    print('TCL:: ~ file: init.lua ~ line 139 ~ grantPrivs', dump(privs));
+    hudcheck(playerName)
+  end
 end
 
 local function checkAnswer(playerName, answer, quiz)
@@ -172,10 +179,14 @@ local function checkAnswer(playerName, answer, quiz)
     if result == true then
       grantPriv(playerName)
       minetest.chat_send_all(S("Congratuation @1, you got the answer!", playerName))
+      giveItem(playerName, "default:torch", 6)
       -- quizzes.next(playerName)
       return true
     elseif answer and answer ~= "" then
       minetest.chat_send_player(playerName, S("Hi @1. Sorry, the answer is not right, think it carefully", playerName))
+    elseif result == nil then
+      grantPriv(playerName)
+      return result
     end
   end
   revokePriv(playerName)
@@ -230,7 +241,7 @@ minetest.register_on_joinplayer(function(player)
     if (dialogClosed and player) then openQuizView(playerName) end
 
 
-    if (checkInterval > 0) and (minetest.is_singleplayer() or minetest.get_player_ip(playerName)) then
+    if (checkInterval > 0) and (minetest.is_singleplayer() or isOnline(playerName)) then
       -- execute after checkInterval seconds
       minetest.after(checkInterval, doCheck)
     end
