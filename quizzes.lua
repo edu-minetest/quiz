@@ -2,8 +2,11 @@
 -- The information is persisted, so after a server restart the information is still available.
 local modstore = minetest.get_mod_storage()
 local MOD_NAME = play_challenge.MOD_NAME
+local MOD_PATH = play_challenge.MOD_PATH
 local S = play_challenge.get_translator
 local settings = play_challenge.settings
+
+local toBool = dofile(MOD_PATH .. "to_bool.lua")
 
 local Quizzes = {}
 local lastAnswered = {}
@@ -40,6 +43,7 @@ local function getCurrent(playerName)
   else
     playerName = player:get_player_name()
   end
+  if not player then return nil, S("@1 may be offline", playerName) end
   local attrs = player:get_meta()
   local quizzes = settings.quiz
   local currQuiz = modstore:get_int(playerName .. ":currentQuiz")
@@ -47,6 +51,14 @@ local function getCurrent(playerName)
   if (not quizzes) then return nil, S("No quesion defined error") end
   if (currQuiz > #quizzes) then setCurrent(playerName, 1) end
   local quiz = quizzes[currQuiz]
+
+  while (not quiz.title or not quiz.answer) and currQuiz < #quizzes do
+    -- skip illegal quiz
+    currQuiz = currQuiz + 1
+    quiz = quizzes[currQuiz]
+  end
+  if (not quiz.title or not quiz.answer) then return nil, S("No legal quesion defined error") end
+
   print('TCL:: ~ file: quizzes.lua ~ line 58 ~ getCurrent', currQuiz, dump(quiz));
   if (not quiz) then return nil, S("No such quesion Id: '@1' defined error", currQuiz) end
   if settings.skipAnswered then
@@ -96,7 +108,14 @@ local function check(playerName, answer, quiz)
   if quiz then
     local attrs = player:get_meta()
     local attrId= MOD_NAME .. ":quiz:" .. id(quiz)
-    if (type(answer) == "string") then
+    if (type(answer) == "string") and answer ~= "" then
+      local vRealAnswer = quiz.answer
+      local vType = type(vRealAnswer)
+      if vType == "number" then
+        answer = tonumber(answer)
+      elseif vType == "boolean" then
+        answer = toBool(answer)
+      end
       if answer == quiz.answer then
         local answeredName = attrId ..":answered"
         local answered = attrs:get_int(answeredName)
@@ -114,7 +133,7 @@ local function check(playerName, answer, quiz)
         attrs:set_int(wrongName, wrong)
         return false
       end
-    else -- check whether it's idletime if no provide answer
+    -- else -- check whether it's idletime if no provide answer
     end
   end
   return quiz, errmsg
