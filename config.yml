@@ -1,10 +1,10 @@
 # totalPlayTime unit is minute
-totalPlayTime: 3
+totalPlayTime: 2
 restTime: 20
 # Whether skip the question which has already be answered correctly.
 skipAnswered: 1
 # checkInterval unit is seconds
-checkInterval: 10
+checkInterval: 5
 # idleInterval unit is minute
 idleInterval: 1
 awards:
@@ -27,7 +27,8 @@ awards:
   - name: steel_ingot
     title: Steel Ingot
     count: 3
-quiz: # question list
+# question list
+quiz:
   - id: favorColor
     title: "What's my favor color?"
     answer: red

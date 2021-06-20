@@ -1,4 +1,4 @@
-# Play Challenge
+# Quiz - Play Challenge
 
 This mod requires players to answer question before they can play.
 
@@ -18,8 +18,10 @@ This mod requires players to answer question before they can play.
     * 当游戏时间到了,踢出玩家.
     * 登录时候,要检查是否休息了足够的时间,根据记录的上一次的离开时间.
 
-disable check if it's admin or in singleplayer mode. 因为无法撤销管理员和单机用户的interact权限!
-但是不停的弹出窗体,也能打扰她打游戏.
+不限制多人游戏的管理者(拥有`server`权限的人)
+disable check if it's admin(has `server` priv).
+注意: 无法撤销管理员和单机用户的interact权限!
+~~但是不停的弹出窗体,也能打扰她打游戏.~~
 
 当回答正确后,奖励物品.
 
