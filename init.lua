@@ -1,8 +1,9 @@
 -- play_challenge/init.lua
 print( "Loading play_challenge Mod" )
 
-local defaultS = default.get_translator
+-- local defaultS = default.get_translator
 
+local store = minetest.get_mod_storage()
 local MOD_NAME = minetest.get_current_modname()
 local MOD_PATH = minetest.get_modpath(MOD_NAME) .. "/"
 -- local WORLD_PATH = minetest.get_worldpath() .. "/"
@@ -15,13 +16,11 @@ local esc = minetest.formspec_escape
 local settings = yaml.readConfig(MOD_NAME, "config.yml")
 -- print(dump(mod_setting));
 
--- record the player last leaved time
-local leavedTime = {}
-
 play_challenge = rawget(_G, MOD_NAME) or {}
 play_challenge.MOD_NAME = MOD_NAME
 play_challenge.MOD_PATH = MOD_PATH
 play_challenge.settings = settings
+play_challenge.store    = store
 -- play_challenge.mod_settings = mod_settings
 -- play_challenge.world_settings = world_settings
 
@@ -39,6 +38,15 @@ local minetest, pairs, type
 local quizzes = dofile(MOD_PATH .. "quizzes.lua")
 
 local dialogClosed = true
+
+local function getLastLeavedTime(playerName)
+  return store:get_int(playerName .. ":leavedTime")
+end
+
+-- record the last leaved time of a player
+local function setLastLeavedTime(playerName, value)
+  return store:set_int(playerName ..":leavedTime", value)
+end
 
 local function get_formspec(player_name, title, desc)
   local text = esc(S("Hi @1, the challenge begins!", player_name))
@@ -233,14 +241,15 @@ end
 minetest.register_on_joinplayer(function(player)
   local playerName = player:get_player_name()
   -- local checkInterval = settings.checkInterval
-  print("register_on_joinplayer:", playerName, settings.restTime, leavedTime[playerName])
-  if settings.restTime > 0 and leavedTime[playerName] then
+  local lastLeavedTime = getLastLeavedTime(playerName)
+  print("register_on_joinplayer:", playerName, settings.restTime, lastLeavedTime)
+  if settings.restTime > 0 and lastLeavedTime then
     local restTime = settings.restTime * 60
-    local realRestTime = os.time() - leavedTime[playerName]
+    local realRestTime = os.time() - lastLeavedTime
     if (realRestTime < restTime) then
       minetest.chat_send_player(playerName,
         S([[Hi, @1. The rest time is not over, please continue to rest your eyes.
-        >>You should quit game after 1 minute."]], playerName))
+        >> You should quit game after 1 minute."]], playerName))
       minetest.after(60, function()
         kickPlayer(playerName, S("The rest time is not over, please continue to rest your eyes."))
       end)
@@ -256,8 +265,8 @@ minetest.register_on_joinplayer(function(player)
       end
     end)
   end
-  if minetest.is_singleplayer() or
-    minetest.check_player_privs(player, "server") then return end
+  -- minetest.is_singleplayer()
+  if minetest.check_player_privs(player, "server") then return end
 
   local function doCheck()
     local checkInterval = settings.checkInterval
@@ -286,7 +295,7 @@ end)
 minetest.register_on_leaveplayer(function(player)
   local playerName = player:get_player_name()
   huds[playerName] = nil
-  leavedTime[playerName] = os.time()
+  setLastLeavedTime(playerName, os.time())
   print(S("@1 has leaved", playerName))
   minetest.chat_send_all(S("@1 has leaved", playerName))
 end)
