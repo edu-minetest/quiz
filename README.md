@@ -1,5 +1,7 @@
 # Quiz - Play Challenge
 
+[![ContentDB](https://content.minetest.net/packages/snowyu/quiz/shields/title/)](https://content.minetest.net/packages/snowyu/quiz/)
+
 This mod requires players to answer question before they can play. If you answer correctly, you will get a award and continue to play, otherwise you will not be able to play.
 
 Players are required to answer questions at regular intervals(`idleInterval`), and the answer is correct to continue playing.
