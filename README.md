@@ -15,8 +15,13 @@ This mod requires players to answer question before they can play.
 * 启动检查的定时器(最小定时器)
   * 检查是否是回答问题的时间
   * 检查是否是已经达到totalPlayTime
+    * 当游戏时间到了,踢出玩家.
+    * 登录时候,要检查是否休息了足够的时间,根据记录的上一次的离开时间.
 
+disable check if it's admin or in singleplayer mode. 因为无法撤销管理员和单机用户的interact权限!
+但是不停的弹出窗体,也能打扰她打游戏.
 
+当回答正确后,奖励物品.
 
 - Remove interact (and possibly other privs) from default_privs.
 - Add any additional privs to `grant` in the `play_challenge.conf` config file.
