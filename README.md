@@ -1,6 +1,6 @@
 # Quiz - Play Challenge
 
-This mod requires players to answer question before they can play.
+This mod requires players to answer question before they can play. If you answer correctly, you will get a award and continue to play, otherwise you will not be able to play.
 
 Players are required to answer questions at regular intervals(`idleInterval`), and the answer is correct to continue playing.
 
@@ -11,6 +11,7 @@ When logging in, check whether you have enough rest time, based on the recorded 
 * Chat Commands(todo)
   * load quizzes
   * manage quiz
+  * manage award
   * save quizzes
 
 `quiz_config.yml` in world folder:
