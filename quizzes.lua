@@ -9,6 +9,7 @@ local settings = play_challenge.settings
 local toBool = dofile(MOD_PATH .. "to_bool.lua")
 
 local Quizzes = {}
+-- record player last answered time
 local lastAnswered = {}
 
 --< Current Quiz Index
