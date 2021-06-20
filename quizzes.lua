@@ -1,6 +1,6 @@
 -- Set by the mod to store and retrieve information.
 -- The information is persisted, so after a server restart the information is still available.
-local modstore = minetest.get_mod_storage()
+local modstore = play_challenge.store
 local MOD_NAME = play_challenge.MOD_NAME
 local MOD_PATH = play_challenge.MOD_PATH
 local S = play_challenge.get_translator
