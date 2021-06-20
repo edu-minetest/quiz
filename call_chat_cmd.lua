@@ -6,14 +6,15 @@ local function callChatCmd(cmdStr, playerName, params)
     local paramsType = type(params)
     if (params == nil or paramsType == "string") then
       return cmd.func(playerName, params)
-    elseif paramsType ~= "table" then
+    elseif paramsType == "table" then
       -- if paramsType ~= "table" then
       --   params = {playerName}
       -- else
       --   table.insert(params, 1, playerName)
       -- end
 
-      return cmd.func(playerName, table.concat(params, " "))
+      params = table.concat(params, " ")
+      return cmd.func(playerName, params)
     end
   else
     minetest.log("warning", "callChatCmd: No such chat command:" .. cmdStr)
