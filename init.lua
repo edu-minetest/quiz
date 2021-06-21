@@ -1,5 +1,5 @@
 -- play_challenge/init.lua
-print( "Loading play_challenge Mod" )
+minetest.log("info", "Loading play_challenge Mod")
 
 -- local defaultS = default.get_translator
 
@@ -49,7 +49,7 @@ local function setLastLeavedTime(playerName, value)
 end
 
 local function get_formspec(player_name, title, desc)
-  local text = esc(S("Hi @1, the challenge begins!", player_name))
+  local text = esc(S("Hi, @1", player_name) .. "," .. S("the challenge begins!"))
   title = esc(title or "")
   if desc then desc = esc(desc or "") end
   local formspec = {
@@ -67,7 +67,7 @@ local function get_formspec(player_name, title, desc)
 end
 
 local function kickPlayer(playerName, reason)
-  print(playerName, " was kicked for ", reason)
+  minetest.log("action", playerName .. " was kicked for " .. reason)
   minetest.kick_player(playerName, reason)
 end
 
@@ -133,17 +133,17 @@ local function hudcheck(pname)
 end
 
 local function revokePriv(playerName)
-  -- local grant = minetest.string_to_privs(settings.grant or "interact,shout")
+  local grant = minetest.string_to_privs(settings.grant or "interact,shout")
   local privs = minetest.get_player_privs(playerName)
-  print('TCL:: ~ file: init.lua ~ line 139 ~ revokePrivs', playerName, dump(privs));
+  -- print('TCL:: ~ file: init.lua ~ line 139 ~ revokePrivs', playerName, dump(privs));
   if #privs then
-    for priv in pairs(privs) do
+    for priv in pairs(grant) do
       privs[priv] = nil
       -- minetest.run_priv_callbacks(playerName, priv, playerName, "revoke")
     end
     minetest.set_player_privs(playerName, privs)
     privs = minetest.get_player_privs(playerName)
-    print('TCL:: ~ file: init.lua ~ line 139 ~ revokePrivs result', playerName, dump(privs));
+    -- print('TCL:: ~ file: init.lua ~ line 139 ~ revokePrivs result', playerName, dump(privs));
     hudcheck(playerName)
   end
 end
@@ -159,21 +159,23 @@ local function grantPriv(playerName)
   end
   if needUpdate then
     minetest.set_player_privs(playerName, privs)
-    print('TCL:: ~ file: init.lua ~ line 139 ~ grantPrivs', dump(privs));
+    -- print('TCL:: ~ file: init.lua ~ line 139 ~ grantPrivs', dump(privs));
     hudcheck(playerName)
   end
 end
 
+local allAnswered = {}
 local function checkAnswer(playerName, answer, quiz)
   -- local playerName = aPlayer:get_player_name()
-  print('TCL:: ~ file: init.lua ~ line 155 ~ checkAnswer -> playerName', playerName);
   local result, errmsg = quizzes.check(playerName, answer, quiz)
-  print('TCL:: ~ file: init.lua ~ line 144 ~ checkAnswer result', result);
   if errmsg then
     if result then
       -- all questions are answered!
-      grantPriv(playerName)
-      minetest.chat_send_all(playerName .. ":" .. errmsg)
+      if not allAnswered[playerName] then
+        grantPriv(playerName)
+        minetest.chat_send_all(errmsg)
+        allAnswered[playerName] = true
+      end
       return true
     else
       revokePriv(playerName)
@@ -189,11 +191,13 @@ local function checkAnswer(playerName, answer, quiz)
       if (#awards) then
         local ix = math.random(#awards)
         local v = givemeItem(playerName, awards[ix])
-        print("givemeItem to", playerName, dump(v))
+        -- print("givemeItem to", playerName, dump(v))
       end
       return true
     elseif answer and answer ~= "" then
-      minetest.chat_send_player(playerName, S("Hi @1. Sorry, the answer is not right, think it carefully", playerName))
+      minetest.chat_send_player(playerName, S("Hi, @1", playerName) .. "." ..
+        S("Sorry, the answer is not right, think it carefully")
+      )
     elseif result == nil then
       grantPriv(playerName)
       return result
@@ -209,9 +213,9 @@ local function openQuizView(playerName)
   local quiz, errmsg = checkAnswer(playerName)
 
   if quiz and errmsg then return end
-  print('TCL:: ~ file: init.lua ~ line 112 ~ playerName', playerName);
+  -- print('TCL:: ~ file: init.lua ~ line 112 ~ playerName', playerName);
   local function on_close(state, player, fields)
-    print('TCL:: ~ file: init.lua ~ line 114 ~ onclose', playerName, dump(fields));
+    -- print('TCL:: ~ file: init.lua ~ line 114 ~ onclose', playerName, dump(fields));
     if fields.quit == minetest.FORMSPEC_SIGTIME then
       local vQuiz, vErrmsg = quizzes.getCurrent(playerName)
       if vQuiz and not vErrmsg then
@@ -242,14 +246,16 @@ minetest.register_on_joinplayer(function(player)
   local playerName = player:get_player_name()
   -- local checkInterval = settings.checkInterval
   local lastLeavedTime = getLastLeavedTime(playerName)
-  print("register_on_joinplayer:", playerName, settings.restTime, lastLeavedTime)
+  -- print("register_on_joinplayer:", playerName, settings.restTime, lastLeavedTime)
   if settings.restTime > 0 and lastLeavedTime then
     local restTime = settings.restTime * 60
     local realRestTime = os.time() - lastLeavedTime
     if (realRestTime < restTime) then
-      minetest.chat_send_player(playerName,
-        S([[Hi, @1. The rest time is not over, please continue to rest your eyes.
-        >> You should quit game after 1 minute."]], playerName))
+      minetest.chat_send_player(playerName, S("Hi, @1", playerName) .. ".\n" ..
+        S("The rest time is not over, please continue to rest your eyes.") .. "\n" ..
+        S("You should quit game.") .. "\n" ..
+        S("It will automatically exit after 1 minute.")
+      )
       minetest.after(60, function()
         kickPlayer(playerName, S("The rest time is not over, please continue to rest your eyes."))
       end)
@@ -258,9 +264,13 @@ minetest.register_on_joinplayer(function(player)
   if settings.totalPlayTime > 0 then
     minetest.after((settings.totalPlayTime) * 60, function()
       if isOnline(playerName) then
-        minetest.chat_send_player(playerName, S("Hi, @1. Game time is about to end, 1 minute left, ", playerName))
+        minetest.chat_send_player(playerName, S("Hi, @1", playerName) .. ".\n" ..
+          S("Game time is over, please rest your eyes.") .. "\n" ..
+          S("You should quit game.") .. "\n" ..
+          S("It will automatically exit after 1 minute.")
+        )
         minetest.after((60), function()
-          kickPlayer(playerName, S("Game time is over, please rest your eyes"))
+          kickPlayer(playerName, S("Game time is over, please rest your eyes."))
         end)
       end
     end)
@@ -270,7 +280,7 @@ minetest.register_on_joinplayer(function(player)
 
   local function doCheck()
     local checkInterval = settings.checkInterval
-    print("doCheck interval:", checkInterval)
+    -- print("doCheck interval:", checkInterval)
 
     if (player) then hudcheck(playerName) end
     if (dialogClosed and player) then openQuizView(playerName) end
@@ -295,8 +305,9 @@ end)
 minetest.register_on_leaveplayer(function(player)
   local playerName = player:get_player_name()
   huds[playerName] = nil
+  allAnswered[playerName] = nil
   setLastLeavedTime(playerName, os.time())
-  print(S("@1 has leaved", playerName))
+  minetest.log("info", S("@1 has leaved", playerName))
   minetest.chat_send_all(S("@1 has leaved", playerName))
 end)
 

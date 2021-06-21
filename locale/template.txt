@@ -1,0 +1,27 @@
+# textdomain: quiz
+Can't get '@1'=
+You get the @1, count: @2.=
+Hi, @1=
+the challenge begins!=
+answer=
+type /@1 your answer in chat window=
+You must answer the question to play.=
+Congratuation @1, you got the answer!=
+Sorry, the answer is not right, think it carefully=
+The rest time is not over, please continue to rest your eyes.=
+You should quit game.=
+It will automatically exit after 1 minute.=
+Game time is over, please rest your eyes.=
+@1 has leaved=
+answer to quiz=
+@1 may be offline=
+No any quiz defined=
+invalid quiz=
+No such quiz Id: '@1'=
+@1 answered all the questions correctly.=
+
+
+##### not used anymore #####
+
+# textdomain: quiz
+Can't get =

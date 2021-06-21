@@ -2,7 +2,7 @@
 totalPlayTime: 2
 restTime: 20
 # Whether skip the question which has already be answered correctly.
-skipAnswered: 1
+skipAnswered: 0
 # checkInterval unit is seconds
 checkInterval: 5
 # idleInterval unit is minute

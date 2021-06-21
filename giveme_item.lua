@@ -13,7 +13,7 @@ local function givemeItem(playerName, item)
 
   local result = callChatCmd("giveme", playerName, {modName .. ":" .. name, count})
   if not result then
-    minetest.chat_send_player(playerName, S("Can't get ")..default.get_translator(title))
+    minetest.chat_send_player(playerName, S("Can't get '@1'", default.get_translator(title)))
   else
     minetest.chat_send_player(playerName, S("You get the @1, count: @2.", default.get_translator(title), count))
   end

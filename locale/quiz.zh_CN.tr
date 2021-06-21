@@ -1,0 +1,21 @@
+# textdomain: quiz
+Can't get '@1'= 无法获取"@1"
+You get the @1, count: @2.= 你得到了 @1, 数量: @2
+Hi, @1= 你好, @1
+the challenge begins!=挑战开始!
+answer=回答
+type /@1 your answer in chat window=在聊天窗口输入 /@1 你的回答
+You must answer the question to play.=你必须回答正确才可以玩
+Congratuation @1, you got the answer!=恭喜 @1, 回答正确!
+Sorry, the answer is not right, think it carefully=抱歉,你在仔细想想
+The rest time is not over, please continue to rest your eyes.=休息时间还没结束,请继续休息你的眼睛
+You should quit game.=你应该退出游戏
+It will automatically exit after 1 minute.=1分钟后自动退出
+Game time is over, please rest your eyes.=游戏时间结束,请爱护您的眼睛
+@1 has leaved=@1已经离开
+answer to quiz=
+@1 may be offline= @1可能已离开
+No any quiz defined=没有测试
+invalid quiz=无效问题
+No such quiz Id: '@1'=无此问题: "@1"
+@1 answered all the questions correctly.= 恭喜, @1 把所有问题都回答正确了!
