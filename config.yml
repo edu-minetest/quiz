@@ -29,9 +29,10 @@ awards:
     count: 3
 # question list
 quiz:
-  - id: favorColor
-    title: "What's my favor color?"
-    answer: red
-  - id: theYear
-  - title: "What's the year?"
-    answer: 2021
+  - id: tutQuizSettingsFileName
+    title: "What's the config file name of the quiz mod in world?"
+    desc: "enh."
+    answer: quiz_config.yml
+  - id: tutUnitOfTotalPlayTime
+    title: "What's the unit of totalPlayTime?"
+    answer: minute
