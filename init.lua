@@ -23,15 +23,19 @@ play_challenge.settings = settings
 play_challenge.store    = store
 play_challenge.get_translator = S
 
+local quizzes = dofile(MOD_PATH .. "quizzes.lua")
+play_challenge.quizzes = quizzes
+
 local givemeItem = dofile(MOD_PATH.."giveme_item.lua")
 local isOnline = dofile(MOD_PATH.."is_online.lua")
+
+-- register chat commands
+dofile(MOD_PATH.."chat_cmds.lua")
 
 -- LUALOCALS < ---------------------------------------------------------
 local minetest, pairs, type
     = minetest, pairs, type
 -- LUALOCALS > ---------------------------------------------------------
-
-local quizzes = dofile(MOD_PATH .. "quizzes.lua")
 
 local dialogClosed = true
 
