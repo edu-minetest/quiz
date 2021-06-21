@@ -54,7 +54,7 @@ quiz:
     title: "What's my favor color?"
     answer: red
   - id: theYear
-  - title: "What's the year?"
+    title: "What's the year?"
     answer: 2021
 ```
 
