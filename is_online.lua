@@ -3,7 +3,7 @@ local function isOnline(playerName)
   for _,player in ipairs(players) do
     local name = player:get_player_name()
     if (name == playerName) then
-      print(playerName .. " is onlined")
+      -- print(playerName .. " is onlined")
       return true
     end
   end
