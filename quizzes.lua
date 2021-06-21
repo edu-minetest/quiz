@@ -31,6 +31,7 @@ local function getPlayerAttr(attrs, attrName, valueType)
   if not valueType then valueType = "int" end
   attrName = quizIdPrefix .. attrName
   local result = attrs["get_"..valueType](attrs, attrName)
+  -- print('TCL:: ~ file: quizzes.lua ~ line 34 ~ getPlayerAttr result', attrName, result);
   return result
 end
 
@@ -76,7 +77,7 @@ local function getCurrent(playerName)
 
   -- print('TCL:: ~ file: quizzes.lua ~ line 58 ~ getCurrent', currQuiz, dump(quiz));
   if (not quiz) then return nil, S("No such quiz Id: '@1'", currQuiz) end
-  if settings.skipAnswered then
+  if settings.skipAnswered and settings.skipAnswered > 0 then
     -- local quizId= MOD_NAME .. ":quiz:"
     local index = currQuiz
     -- local attrId= quizId .. id(quiz)
@@ -89,7 +90,9 @@ local function getCurrent(playerName)
     end
     setCurrent(playerName, index)
     -- print('TCL:: ~ file: quizzes.lua ~ line 81 ~ getCurrent - answered', attrId, answered);
-    if (answered >= settings.skipAnswered) then return quiz, S("All quizzes are answered") end
+    if (answered >= settings.skipAnswered) then
+      return quiz, S("@1 answered all the questions correctly.", playerName)
+    end
   end
   return quiz
 end
