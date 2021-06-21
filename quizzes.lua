@@ -27,6 +27,7 @@ local function id(quiz)
   return quiz.id or minetest.sha1(quiz.title)
 end
 
+-- valueType: int, string, float
 local function getPlayerAttr(attrs, attrName, valueType)
   if not valueType then valueType = "int" end
   attrName = quizIdPrefix .. attrName
