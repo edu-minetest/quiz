@@ -14,7 +14,7 @@ When logging in, check whether you have enough rest time, based on the recorded 
   * `loadQuiz`: reload quizzes from config file.
   * `quiz <add> "Title" "Answer"`: add a quiz(TODO)
   * `quiz <list>`: list all quiz
-  * `quiz <del> <Index|Id> `: delete the quiz(TODO)
+  * `quiz <del> <Index|Id> `: delete a quiz
   * `quiz <edit> <Index|Id> "Title" "Answer"`: edit the quiz(TODO)
   * manage award(TODO)
   * `saveQuiz`: save quizzes to config file.

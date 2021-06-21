@@ -52,7 +52,26 @@ local QuizCRUD = {
     return true, 'to do'
   end,
   del = function(param)
-    return true, 'to do'
+    local quizList = settings.quiz
+    param = (type(param) == "string") and param:match("^%s*(.-)%s*$")
+    if not param or param == "" then return false, S("id/index param required") end
+    local n = tonumber(param)
+    if n then
+      if n > 0 and n < #quizList then
+        table.remove(quizList, n)
+        return true, S("remove successfully")
+      else
+        return false, S("Invalid index value @1", n)
+      end
+    else
+      for ix, quiz in pairs(quizList) do
+        if quizzes.id(quiz) == param then
+          table.remove(quizList, ix)
+          return true, S("remove successfully")
+        end
+      end
+      return false, S("Invalid id value @1", param)
+    end
   end,
   edit = function(param)
     return true, 'to do'
