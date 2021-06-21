@@ -11,6 +11,7 @@ local toBool = dofile(MOD_PATH .. "to_bool.lua")
 local Quizzes = {}
 -- record player last answered time
 local lastAnswered = {}
+local quizIdPrefix = MOD_NAME .. ":"
 
 --< Current Quiz Index
 -- modstore:get_int("currentQuiz")
@@ -24,6 +25,19 @@ end
 
 local function id(quiz)
   return quiz.id or minetest.sha1(quiz.title)
+end
+
+local function getPlayerAttr(attrs, attrName, valueType)
+  if not valueType then valueType = "int" end
+  attrName = quizIdPrefix .. attrName
+  local result = attrs["get_"..valueType](attrs, attrName)
+  return result
+end
+
+local function setPlayerAttr(attrs, attrName, value, valueType)
+  if not valueType then valueType = "int" end
+  attrName = quizIdPrefix .. attrName
+  return attrs["set_"..valueType](attrs, attrName, value)
 end
 
 local function setCurrent(playerName, index)
@@ -49,7 +63,7 @@ local function getCurrent(playerName)
   local quizzes = settings.quiz
   local currQuiz = modstore:get_int(playerName .. ":currentQuiz")
   if currQuiz == 0 then currQuiz = 1 end
-  if (not quizzes) then return nil, S("No quesion defined error") end
+  if (not quizzes) then return nil, S("No any quiz defined") end
   if (currQuiz > #quizzes) then setCurrent(playerName, 1) end
   local quiz = quizzes[currQuiz]
 
@@ -58,23 +72,24 @@ local function getCurrent(playerName)
     currQuiz = currQuiz + 1
     quiz = quizzes[currQuiz]
   end
-  if (not quiz.title or not quiz.answer) then return nil, S("No legal quesion defined error") end
+  if (not quiz.title or not quiz.answer) then return nil, S("invalid quiz") end
 
-  print('TCL:: ~ file: quizzes.lua ~ line 58 ~ getCurrent', currQuiz, dump(quiz));
-  if (not quiz) then return nil, S("No such quesion Id: '@1' defined error", currQuiz) end
+  -- print('TCL:: ~ file: quizzes.lua ~ line 58 ~ getCurrent', currQuiz, dump(quiz));
+  if (not quiz) then return nil, S("No such quiz Id: '@1'", currQuiz) end
   if settings.skipAnswered then
-    local quizId= MOD_NAME .. ":quiz:"
+    -- local quizId= MOD_NAME .. ":quiz:"
     local index = currQuiz
-    local attrId= quizId .. id(quiz)
-    local answered = attrs:get_int(attrId)
+    -- local attrId= quizId .. id(quiz)
+    local answered = getPlayerAttr(attrs, id(quiz)..":answered") -- attrs:get_int(attrId)
     while answered >= settings.skipAnswered and index < #quizzes do
       index = index+1
       quiz = quizzes[currQuiz]
-      attrId= quizId .. id(quiz)
-      answered = attrs:get_int(attrId)
+      -- attrId= quizId .. id(quiz)
+      answered = getPlayerAttr(attrs, id(quiz)..":answered")
     end
     setCurrent(playerName, index)
-    if (answered >= settings.skipAnswered) then return quiz, S("All quesions are answered") end
+    -- print('TCL:: ~ file: quizzes.lua ~ line 81 ~ getCurrent - answered', attrId, answered);
+    if (answered >= settings.skipAnswered) then return quiz, S("All quizzes are answered") end
   end
   return quiz
 end
@@ -94,7 +109,7 @@ local function next(playerName)
 end
 
 local function check(playerName, answer, quiz)
-  print('TCL:: ~ file: quizzes.lua ~ line 83 ~ check - playerName, answer, quiz', playerName, answer, quiz);
+  -- print('TCL:: ~ file: quizzes.lua ~ line 83 ~ check - playerName, answer, quiz', playerName, answer, quiz);
   if not quiz and not answer then
     -- check whether it's idletime if no provide answer
     local idletime = settings.idleInterval
@@ -103,7 +118,7 @@ local function check(playerName, answer, quiz)
       local lasttime = lastAnswered[playerName] or 0
       if lasttime ~= 0 then
         lasttime = os.time() - lasttime
-        print('TCL:: ~ file: quizzes.lua ~ line 142 ~ check: lasttime', idletime, lasttime);
+        -- print('TCL:: ~ file: quizzes.lua ~ line 142 ~ check: lasttime', idletime, lasttime);
         if (lasttime <= idletime) then return nil end
       end
     end
@@ -118,10 +133,10 @@ local function check(playerName, answer, quiz)
   if type(quiz) ~= "table" then
     quiz, errmsg = getCurrent(playerName)
   end
-  print('TCL:: ~ file: quizzes.lua ~ line 95 ~ check quiz', dump(quiz));
+  -- print('TCL:: ~ file: quizzes.lua ~ line 95 ~ check quiz', dump(quiz));
   if quiz then
     local attrs = player:get_meta()
-    local attrId= MOD_NAME .. ":quiz:" .. id(quiz)
+    local quizId= id(quiz)
     if (type(answer) == "string") and answer ~= "" then
       local vRealAnswer = quiz.answer
       local vType = type(vRealAnswer)
@@ -131,20 +146,18 @@ local function check(playerName, answer, quiz)
         answer = toBool(answer)
       end
       if answer == quiz.answer then
-        local answeredName = attrId ..":answered"
-        local answered = attrs:get_int(answeredName)
+        local answeredName = quizId ..":answered"
+        local answered = getPlayerAttr(attrs, answeredName)
         answered = answered + 1
-        print('TCL:: ~ file: quizzes.lua ~ line 104 ~ check answered count', answered);
-        attrs:set_int(answeredName, answered)
+        setPlayerAttr(attrs, answeredName, answered)
         lastAnswered[playerName] = os.time()
         next(playerName)
         return true
       else
-        local wrongName = attrId .. ":wrong"
-        local wrong = attrs:get_int(wrongName)
+        local wrongName = quizId .. ":wrong"
+        local wrong = getPlayerAttr(attrs, wrongName)
         wrong = wrong + 1
-        print('TCL:: ~ file: quizzes.lua ~ line 112 ~ check wrong count', wrong);
-        attrs:set_int(wrongName, wrong)
+        setPlayerAttr(attrs, wrongName, wrong)
         return false
       end
     end
