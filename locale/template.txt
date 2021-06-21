@@ -1,4 +1,14 @@
 # textdomain: quiz
+(Re)load quiz config file=
+Quiz config file loaded.=
+Quiz config file loading failed.=
+Save quiz to the config file=
+Quiz config file saved.=
+Quiz config file saving failed.=
+Quiz list=
+< list|add|del|edit > [< index|id >, "< Title >", "< Answer >"]=
+manage the quizzes=
+Invalid quiz action: @1=
 Can't get '@1'=
 You get the @1, count: @2.=
 Hi, @1=

@@ -32,10 +32,46 @@ minetest.register_chatcommand("saveQuiz", {
   func = function(name, param)
     local result = yaml.writeConfig(settings, "config.yml", MOD_NAME)
     if result then
-      merge(settings, newSettings)
       return true, S("Quiz config file saved.")
     else
       return false, S("Quiz config file saving failed.")
+    end
+  end,
+})
+
+local QuizCRUD = {
+  list = function()
+    local quizList = settings.quiz
+    local result = {"", S("Quiz list"), "-------------", "ix,id,  title"}
+    for ix, quiz in pairs(quizList) do
+      result[#result+1] = ix .. "," .. quizzes.id(quiz) .. ",  " .. quiz.title
+    end
+    return true, table.concat(result, "\n")
+  end,
+  add = function(param)
+    return true, 'to do'
+  end,
+  del = function(param)
+    return true, 'to do'
+  end,
+  edit = function(param)
+    return true, 'to do'
+  end,
+}
+
+minetest.register_chatcommand("quiz", {
+	params = S("< list|add|del|edit > [< index|id >, \"< Title >\", \"< Answer >\"]"),
+  description = S("manage the quizzes"),
+  privs = {
+    server = true,
+  },
+  func = function(name, param)
+		local action, params = string.match(param, "^([^ ]+) *(.*)$")
+    local cmd = QuizCRUD[action]
+    if type(cmd) == "function" then
+      return cmd(params)
+    else
+      return false, S("Invalid quiz action: @1", action)
     end
   end,
 })

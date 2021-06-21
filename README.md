@@ -10,15 +10,20 @@ When the game time(`totalPlayTime`) is up, kick the player out.
 
 When logging in, check whether you have enough rest time, based on the recorded last time you left. If you do not have enough rest, you will be kicked out.
 
-* Chat Commands(todo)
-  * load quizzes
-  * manage quiz
-  * manage award
-  * save quizzes
+* Chat Commands
+  * `loadQuiz`: reload quizzes from config file.
+  * `quiz <add> "Title" "Answer"`: add a quiz(TODO)
+  * `quiz <list>`: list all quiz
+  * `quiz <del> <Index|Id> `: delete the quiz(TODO)
+  * `quiz <edit> <Index|Id> "Title" "Answer"`: edit the quiz(TODO)
+  * manage award(TODO)
+  * `saveQuiz`: save quizzes to config file.
 
 `quiz_config.yml` in world folder:
 
 ```yaml
+# the revoke or grant privileges, defaults to "interact,shout"
+grant: interact,shout
 # totalPlayTime unit is minute
 totalPlayTime: 2
 restTime: 20

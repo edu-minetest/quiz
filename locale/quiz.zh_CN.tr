@@ -1,4 +1,14 @@
 # textdomain: quiz
+(Re)load quiz config file=(重新)加载测验的配置文件
+Quiz config file loaded.=测验的配置文件加载完毕
+Quiz config file loading failed.=配置文件加载失败
+Save quiz to the config file=保存到配置文件
+Quiz config file saved.=配置文件保存完毕
+Quiz config file saving failed.=配置文件保存失败
+Quiz list=测验列表
+< list|add|del|edit > [< index|id >, "< Title >", "< Answer >"]=
+manage the quizzes=管理测验列表
+Invalid quiz action: @1=无效的动作: @1
 Can't get '@1'= 无法获取"@1"
 You get the @1, count: @2.= 你得到了@1, 数量: @2
 Hi, @1= 你好, @1
