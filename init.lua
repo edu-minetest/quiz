@@ -21,10 +21,6 @@ play_challenge.MOD_NAME = MOD_NAME
 play_challenge.MOD_PATH = MOD_PATH
 play_challenge.settings = settings
 play_challenge.store    = store
--- play_challenge.mod_settings = mod_settings
--- play_challenge.world_settings = world_settings
-
-play_challenge.current = 0
 play_challenge.get_translator = S
 
 local givemeItem = dofile(MOD_PATH.."giveme_item.lua")
@@ -52,15 +48,18 @@ local function get_formspec(player_name, title, desc)
   local text = esc(S("Hi, @1", player_name) .. "," .. S("the challenge begins!"))
   title = esc(title or "")
   if desc then desc = esc(desc or "") end
+  local question = esc(S("Question"))
+  local answer = esc(S("Answer"))
   local formspec = {
     "formspec_version[4]",
-    "size[8,6]",
+    "size[10,9]",
     "label[0,0.2;", text, "]",
-    "label[0.4,0.8;", title, "]",
-    "field[0.2,1.5;5.6,0.9;answer;Answer;]",
+    "box[0.4,1.1;9.2,4.25;#999999]",
+    "textarea[0.4,1.1;9.2,4.25;;",question, ";" , title, "]",
+    "field[0.4,6;9.2,0.9;answer;", answer, ";]",
   }
-  if desc then formspec[#formspec+1] = "label[0.1,2.7;".. desc .."]" end
-  formspec[#formspec+1] = "button_exit[1.8,3.2;3.5,0.8;ok;Ok]"
+  if desc then formspec[#formspec+1] = "label[0.4,7.2;".. desc .."]" end
+  formspec[#formspec+1] = "button_exit[3.2,8;3.5,0.8;ok;Ok]"
 
   -- table.concat is faster than string concatenation - `..`
   return table.concat(formspec, "")
@@ -142,7 +141,7 @@ local function revokePriv(playerName)
       -- minetest.run_priv_callbacks(playerName, priv, playerName, "revoke")
     end
     minetest.set_player_privs(playerName, privs)
-    privs = minetest.get_player_privs(playerName)
+    -- privs = minetest.get_player_privs(playerName)
     -- print('TCL:: ~ file: init.lua ~ line 139 ~ revokePrivs result', playerName, dump(privs));
     hudcheck(playerName)
   end
