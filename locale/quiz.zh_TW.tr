@@ -1,8 +1,10 @@
 # textdomain: quiz
 Can't get '@1'= 無法獲取"@1"
-You get the @1, count: @2.= 你得到了 @1, 數量: @2
+You get the @1, count: @2.= 你得到了@1, 數量: @2
 Hi, @1= 你好, @1
 the challenge begins!=挑戰開始!
+Question=問
+Answer=答
 answer=回答
 type /@1 your answer in chat window=在聊天窗口輸入 /@1 你的回答
 You must answer the question to play.=你必須回答正確才可以玩
