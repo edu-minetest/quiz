@@ -23,6 +23,10 @@ function Quizzes.lastAnswered(playerName)
   return lastAnswered[playerName]
 end
 
+function Quizzes.clearAnswered()
+  lastAnswered = {}
+end
+
 local function id(quiz)
   return quiz.id or minetest.sha1(quiz.title)
 end
