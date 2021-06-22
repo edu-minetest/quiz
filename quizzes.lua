@@ -55,7 +55,10 @@ local function getCurrent(playerName)
   local currQuiz = modstore:get_int(playerName .. ":currentQuiz")
   if currQuiz == 0 then currQuiz = 1 end
   if (not quizzes) then return nil, S("No any quiz defined") end
-  if (currQuiz > #quizzes) then setCurrent(playerName, 1) end
+  if (currQuiz > #quizzes) then
+    setCurrent(playerName, 1)
+    currQuiz = 1
+  end
   local quiz = quizzes[currQuiz]
 
   while (not quiz.title or not quiz.answer) and currQuiz < #quizzes do
