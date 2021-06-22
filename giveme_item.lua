@@ -4,7 +4,7 @@ local S = play_challenge.get_translator
 local callChatCmd = dofile(MOD_PATH.."call_chat_cmd.lua")
 
 local function givemeItem(playerName, item)
-  local name = item.name
+  local name = item.id
   local modName = item.mod or "default"
   local count = item.count or 1
   local title = item.title or name

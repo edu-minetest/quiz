@@ -69,11 +69,6 @@ local function get_formspec(player_name, title, desc)
   return table.concat(formspec, "")
 end
 
-local function kickPlayer(playerName, reason)
-  minetest.log("action", playerName .. " was kicked for " .. reason)
-  minetest.kick_player(playerName, reason)
-end
-
 -- local motddesc = conf("get", "desc") or "terms"
 
 local cmdname = settings.cmdName or S("answer")
@@ -85,6 +80,26 @@ local hudline1 = settings.hudline1 or S("You must answer the question to play.")
 local hudline2 = settings.hudline2 or cmdDesc
 
 local huds = {}
+local allAnswered = {}
+local joinTime = {}
+
+local function resetWhenLeaving(playerName)
+  huds[playerName] = nil
+  allAnswered[playerName] = nil
+  local enterTime = joinTime[playerName]
+  joinTime[playerName] = nil
+  local currTime = os.time()
+  if enterTime and (currTime - enterTime > 66) then
+    setLastLeavedTime(playerName, currTime)
+  end
+end
+
+local function kickPlayer(playerName, reason)
+  -- resetWhenLeaving(playerName)
+  minetest.log("action", playerName .. " was kicked for " .. reason)
+  minetest.kick_player(playerName, reason)
+end
+
 -- create or update HUD
 local function showHud(player, id, offset, text)
   if not id then
@@ -167,7 +182,6 @@ local function grantPriv(playerName)
   end
 end
 
-local allAnswered = {}
 local function checkAnswer(playerName, answer, quiz)
   -- local playerName = aPlayer:get_player_name()
   local result, errmsg = quizzes.check(playerName, answer, quiz)
@@ -247,20 +261,26 @@ end
 
 minetest.register_on_joinplayer(function(player)
   local playerName = player:get_player_name()
+  local currTime = os.time()
+  joinTime[playerName] = currTime
   -- local checkInterval = settings.checkInterval
   local lastLeavedTime = getLastLeavedTime(playerName)
   -- print("register_on_joinplayer:", playerName, settings.restTime, lastLeavedTime)
   if settings.restTime > 0 and lastLeavedTime then
     local restTime = settings.restTime * 60
-    local realRestTime = os.time() - lastLeavedTime
+    local realRestTime = currTime - lastLeavedTime
     if (realRestTime < restTime) then
+      local leftRestTime = math.floor((restTime - realRestTime) / 60 + 0.5)
       minetest.chat_send_player(playerName, S("Hi, @1", playerName) .. ".\n" ..
         S("The rest time is not over, please continue to rest your eyes.") .. "\n" ..
+        S("You have to rest for another @1 minutes.", leftRestTime) .. "\n" ..
         S("You should quit game.") .. "\n" ..
         S("It will automatically exit after 1 minute.")
       )
       minetest.after(60, function()
-        kickPlayer(playerName, S("The rest time is not over, please continue to rest your eyes."))
+        kickPlayer(playerName, S("The rest time is not over, please continue to rest your eyes.") .. "\n" ..
+          S("You have to rest for another @1 minutes.", leftRestTime)
+        )
       end)
     end
   end
@@ -307,15 +327,13 @@ end)
 
 minetest.register_on_leaveplayer(function(player)
   local playerName = player:get_player_name()
-  huds[playerName] = nil
-  allAnswered[playerName] = nil
-  setLastLeavedTime(playerName, os.time())
+  resetWhenLeaving(playerName)
   minetest.log("info", S("@1 has leaved", playerName))
   minetest.chat_send_all(S("@1 has leaved", playerName))
 end)
 
 -- minetest.register_privilege(MOD_NAME, {
---     description = S("answer to quiz"),
+--     description = S("manage to quiz"),
 --     give_to_singleplayer = false,
 --     give_to_admin = false,
 --     on_grant = hudcheck,

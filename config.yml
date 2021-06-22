@@ -9,22 +9,22 @@ checkInterval: 5
 idleInterval: 1
 awards:
   # the item name to give
-  - name: coalblock
+  - id: coalblock
     # for translation
     title: Coal Block
     # optional, the defaults to default mod
     mod: default
     # the item count, optional the defaults to 1
     count: 1
-  - name: wood
+  - id: wood
     title: Apple Wood Planks
     count: 3
-  - name: stone
+  - id: stone
     title: Stone
     count: 3
-  - name: torch
+  - id: torch
     title: Torch
-  - name: steel_ingot
+  - id: steel_ingot
     title: Steel Ingot
     count: 3
 # question list
