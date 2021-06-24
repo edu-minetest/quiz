@@ -7,6 +7,10 @@ skipAnswered: 0
 checkInterval: 5
 # idleInterval unit is minute
 idleInterval: 1
+# Whether to force the administrator to rest
+forceAdminRest: false
+# the delay time of kicking, unit is seconds
+kickDelay: 2
 awards:
   # the item name to give
   - id: coalblock

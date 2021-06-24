@@ -36,6 +36,9 @@ skipAnswered: 1
 checkInterval: 5
 # idleInterval unit is minute
 idleInterval: 5
+# the delay time of kicking, unit is seconds
+kickDelay: 2
+# the awards to give
 awards:
   # the item name to give
   # minetest_game/mods/default/nodes.lua

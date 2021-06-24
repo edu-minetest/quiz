@@ -259,9 +259,9 @@ local function openQuizView(playerName)
   end
 end
 
-minetest.register_on_joinplayer(function(player)
-  local playerName = player:get_player_name()
+local function checkGameTime(playerName)
   local currTime = os.time()
+  local kickDelay = settings.kickDelay or 60
   joinTime[playerName] = currTime
   -- local checkInterval = settings.checkInterval
   local lastLeavedTime = getLastLeavedTime(playerName)
@@ -277,7 +277,7 @@ minetest.register_on_joinplayer(function(player)
         S("You should quit game.") .. "\n" ..
         S("It will automatically exit after 1 minute.")
       )
-      minetest.after(60, function()
+      minetest.after(kickDelay, function()
         kickPlayer(playerName, S("The rest time is not over, please continue to rest your eyes.") .. "\n" ..
           S("You have to rest for another @1 minutes.", leftRestTime)
         )
@@ -292,14 +292,21 @@ minetest.register_on_joinplayer(function(player)
           S("You should quit game.") .. "\n" ..
           S("It will automatically exit after 1 minute.")
         )
-        minetest.after((60), function()
+        minetest.after(kickDelay, function()
           kickPlayer(playerName, S("Game time is over, please rest your eyes."))
         end)
       end
     end)
   end
+end
+
+minetest.register_on_joinplayer(function(player)
+  local playerName = player:get_player_name()
+  local isAdmin = minetest.check_player_privs(player, "quiz")
+
+  if settings.forceAdminRest or not isAdmin then checkGameTime(playerName) end
   -- minetest.is_singleplayer()
-  if minetest.check_player_privs(player, "server") then return end
+  if isAdmin then return end
 
   local function doCheck()
     local checkInterval = settings.checkInterval

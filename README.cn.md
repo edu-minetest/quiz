@@ -25,6 +25,8 @@ disable check if it's admin(has `server` priv).
 
 当回答正确后,奖励物品.
 
+需要增加问题类别: 计算类型,自动出计算题
+
 - Remove interact (and possibly other privs) from default_privs.
 - Add any additional privs to `grant` in the `play_challenge.conf` config file.
 
