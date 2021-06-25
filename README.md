@@ -15,6 +15,7 @@ When logging in, check whether you have enough rest time, based on the recorded 
   * `quiz <list>`: list all quiz
   * `quiz <del> <Index|Id>`: delete a quiz
   * `quiz <set> <Index|Id> title="Title" answer="Answer"`: edit/add the quiz
+  * `quiz reset [<playerName>]`: reset the game time of a player
   * `quizAward <list>`: list all awards
   * `quizAward <del> <Index|name>`: delete a award
   * `quizAward <set> <Index|name> title="Title" [mod="default"] [count=<Number>]`: edit/add the award
@@ -36,7 +37,7 @@ skipAnswered: 1
 checkInterval: 5
 # idleInterval unit is minute
 idleInterval: 5
-# the delay time of kicking, unit is seconds
+# the delay time to kick off, unit is seconds
 kickDelay: 2
 # the awards to give
 awards:
