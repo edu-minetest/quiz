@@ -142,6 +142,11 @@ local QuizCRUD = {
   del = delQuiz,
   rm = delQuiz,
   delete = delQuiz,
+  reset = function(param, playerName)
+    if (type(param) == "string") and param ~= "" then playerName = param end
+    play_challenge.setLastLeavedTime(playerName, 0)
+    return true, S("reset @1 successful", playerName)
+  end,
   revoke = function(_, playerName)
     local privs = minetest.get_player_privs(playerName)
     if (privs["quiz"]) then
@@ -153,7 +158,7 @@ local QuizCRUD = {
 }
 
 minetest.register_chatcommand("quiz", {
-	params = S('<list|set|del> [<index|id>, title="Title", answer="Answer"]'),
+	params = S('<list|set|del|reset> [<index|id>, title="Title", answer="Answer"]'),
   description = S("manage the quizzes"),
   privs = {
     quiz = true,

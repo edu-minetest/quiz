@@ -13,7 +13,8 @@ id/index param required=
 remove successfully=
 Invalid index value @1=
 Invalid id value @1=
-<list|set|del> [<index|id>, title@="Title", answer@="Answer"]=
+reset @1 successful=
+<list|set|del|reset> [<index|id>, title@="Title", answer@="Answer"]=
 manage the quizzes=
 Invalid quiz action: @1=
 Award list=

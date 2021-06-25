@@ -13,7 +13,8 @@ id/index param required=缺少必須的id/index參數
 remove successfully=刪除成功
 Invalid index value @1=無效索引值: @1
 Invalid id value @1=無效的id值: @1
-<list|set|del> [<index|id>, title@="Title", answer@="Answer"]=
+reset @1 successful=@1 時間重置成功
+<list|set|del|reset> [<index|id>, title@="Title", answer@="Answer"]=
 manage the quizzes=管理測驗列表
 Invalid quiz action: @1=(quiz)無效的動作: @1
 Award list=獎品列表
