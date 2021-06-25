@@ -42,11 +42,14 @@ local dialogClosed = true
 local function getLastLeavedTime(playerName)
   return store:get_int(playerName .. ":leavedTime")
 end
+play_challenge.getLastLeavedTime = getLastLeavedTime
 
 -- record the last leaved time of a player
 local function setLastLeavedTime(playerName, value)
   return store:set_int(playerName ..":leavedTime", value)
 end
+
+play_challenge.setLastLeavedTime = setLastLeavedTime
 
 local function get_formspec(player_name, title, desc)
   local text = esc(S("Hi, @1", player_name) .. "," .. S("the challenge begins!"))
