@@ -26,25 +26,25 @@ When logging in, check whether you have enough rest time, based on the recorded 
 ```yaml
 # the revoke or grant privileges, defaults to "interact,shout"
 grant: interact,shout
-# totalPlayTime unit is minute
+# totalPlayTime unit is minute, 0 means disable totalPlayTime
 totalPlayTime: 30
-# the rest time after playing, unit is minute
+# the rest time after playing, unit is minute, 0 means disable resetTime
 restTime: 20
 # Whether skip the question which has already be answered correctly.
 # The number is answered count correctly to skip
 skipAnswered: 1
-# checkInterval unit is seconds
+# checkInterval unit is second
 checkInterval: 5
 # idleInterval unit is minute
 idleInterval: 5
-# the delay time to kick off, unit is seconds
+# the delay time to kick off, unit is second
 kickDelay: 2
 # the awards to give
 awards:
   # the item name to give
   # minetest_game/mods/default/nodes.lua
   - id: coalblock
-    # for translation
+    # optional, for translation
     title: Coal Block
     # optional, the defaults to default mod
     mod: default
