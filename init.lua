@@ -48,8 +48,18 @@ play_challenge.getLastLeavedTime = getLastLeavedTime
 local function setLastLeavedTime(playerName, value)
   return store:set_int(playerName ..":leavedTime", value)
 end
-
 play_challenge.setLastLeavedTime = setLastLeavedTime
+
+local function getUsedTime(playerName)
+  return store:get_int(playerName .. ":usedTime")
+end
+play_challenge.getUsedTime = getUsedTime
+
+-- record the last used time of a player
+local function setUsedTime(playerName, value)
+  return store:set_int(playerName ..":usedTime", value)
+end
+play_challenge.setUsedTime = setUsedTime
 
 local function get_formspec(player_name, title, desc)
   local text = esc(S("Hi, @1", player_name) .. "," .. S("the challenge begins!"))
@@ -89,11 +99,13 @@ local joinTime = {}
 local function resetWhenLeaving(playerName)
   huds[playerName] = nil
   allAnswered[playerName] = nil
-  local enterTime = joinTime[playerName]
-  joinTime[playerName] = nil
+  local enterTime = joinTime[playerName] or 0
+  -- joinTime[playerName] = nil
   local currTime = os.time()
-  if enterTime and (currTime - enterTime > 66) then
+  local usedTime = getUsedTime(playerName) + currTime - enterTime
+  if enterTime and (usedTime > 0) then
     setLastLeavedTime(playerName, currTime)
+    setUsedTime(playerName, usedTime)
   end
 end
 
@@ -261,6 +273,7 @@ local function openQuizView(playerName)
     return true
   end
 end
+play_challenge.openQuizView = openQuizView
 
 local function checkGameTime(playerName)
   local currTime = os.time()
@@ -268,10 +281,13 @@ local function checkGameTime(playerName)
   joinTime[playerName] = currTime
   -- local checkInterval = settings.checkInterval
   local lastLeavedTime = getLastLeavedTime(playerName)
-  -- print("register_on_joinplayer:", playerName, settings.restTime, lastLeavedTime)
-  if settings.restTime > 0 and lastLeavedTime then
-    local restTime = settings.restTime * 60
-    local realRestTime = currTime - lastLeavedTime
+  local lastUsedTime = getUsedTime(playerName) or 0
+  local restTime = (settings.restTime or 0) * 60
+  local realRestTime = currTime - lastLeavedTime
+  print('TCL:: ~ file: init.lua ~ line 285 ~ register_on_joinplayer lastUsedTime', lastUsedTime);
+  local totalPlayTime = settings.totalPlayTime * 60 - lastUsedTime
+  print("register_on_joinplayer:", playerName, settings.restTime, totalPlayTime, lastLeavedTime)
+  if totalPlayTime <= 0 and restTime > 0 and lastLeavedTime then
     if (realRestTime < restTime) then
       local leftRestTime = math.floor((restTime - realRestTime) / 60 + 0.5)
       minetest.chat_send_player(playerName, S("Hi, @1", playerName) .. ".\n" ..
@@ -285,10 +301,13 @@ local function checkGameTime(playerName)
           S("You have to rest for another @1 minutes.", leftRestTime)
         )
       end)
+    else
+      totalPlayTime = settings.totalPlayTime * 60
     end
   end
-  if settings.totalPlayTime > 0 then
-    minetest.after((settings.totalPlayTime) * 60, function()
+  if totalPlayTime > 0 then
+    setUsedTime(playerName, 0)
+    minetest.after(totalPlayTime, function()
       if isOnline(playerName) then
         minetest.chat_send_player(playerName, S("Hi, @1", playerName) .. ".\n" ..
           S("Game time is over, please rest your eyes.") .. "\n" ..
