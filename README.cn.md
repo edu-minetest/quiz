@@ -22,6 +22,8 @@ This mod requires players to answer question before they can play.
 disable check if it's admin(has `server` priv).
 注意: 无法撤销管理员和单机用户的interact权限!
 ~~但是不停的弹出窗体,也能打扰她打游戏.~~
+TODO: 可以在单人游戏增加一个管理密码,只有密码输入正确才能管理,留待以后实现.
+
 
 当回答正确后,奖励物品.
 
