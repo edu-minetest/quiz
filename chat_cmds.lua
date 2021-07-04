@@ -6,6 +6,7 @@ local MOD_NAME = play_challenge.MOD_NAME
 local MOD_PATH = play_challenge.MOD_PATH
 local settings = play_challenge.settings
 local quizzes  = play_challenge.quizzes
+local openQuizView = play_challenge.openQuizView
 
 local merge = dofile(MOD_PATH .. "merge_table.lua")
 local split = dofile(MOD_PATH .. "split.lua")
@@ -25,6 +26,17 @@ minetest.register_privilege("quiz", {
   description = S("manage to quiz"),
   give_to_singleplayer = false, --< DO NOT defaults to singleplayer
   give_to_admin = false,        --< DO NOT defaults to admin
+})
+
+minetest.register_chatcommand("answer", {
+  description = S("answer the quiz"),
+  privs = {
+    quiz = true,
+  },
+  func = function(name, param)
+    openQuizView(name)
+    return true
+  end,
 })
 
 minetest.register_chatcommand("loadQuiz", {
@@ -147,7 +159,8 @@ local QuizCRUD = {
     play_challenge.setLastLeavedTime(playerName, 0)
     return true, S("reset @1 successful", playerName)
   end,
-  revoke = function(_, playerName)
+  revoke = function(param, playerName)
+    if (type(param) == "string") and param ~= "" then playerName = param end
     local privs = minetest.get_player_privs(playerName)
     if (privs["quiz"]) then
       privs["quiz"] = nil
@@ -158,7 +171,7 @@ local QuizCRUD = {
 }
 
 minetest.register_chatcommand("quiz", {
-	params = S('<list|set|del|reset> [<index|id>, title="Title", answer="Answer"]'),
+	params = S('<list|set|del|reset|revoke> [<index|id>, title="Title", answer="Answer"]'),
   description = S("manage the quizzes"),
   privs = {
     quiz = true,
