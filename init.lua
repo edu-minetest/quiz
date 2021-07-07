@@ -278,6 +278,7 @@ play_challenge.openQuizView = openQuizView
 local function checkGameTime(playerName)
   local currTime = os.time()
   local kickDelay = settings.kickDelay or 60
+  local lastJoinTime = joinTime[playerName] or 0
   joinTime[playerName] = currTime
   -- local checkInterval = settings.checkInterval
   local lastLeavedTime = getLastLeavedTime(playerName)
