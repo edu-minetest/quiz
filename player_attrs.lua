@@ -1,4 +1,4 @@
-local MOD_NAME = play_challenge.MOD_NAME
+local MOD_NAME = quiz.MOD_NAME
 
 -- valueType: int, string, float
 local function getPlayerAttr(attrs, attrName, valueType, sep)

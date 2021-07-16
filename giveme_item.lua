@@ -1,5 +1,5 @@
-local MOD_PATH = play_challenge.MOD_PATH
-local S = play_challenge.get_translator
+local MOD_PATH = quiz.MOD_PATH
+local S = quiz.get_translator
 
 local callChatCmd = dofile(MOD_PATH.."call_chat_cmd.lua")
 
@@ -13,7 +13,7 @@ local function givemeItem(playerName, item)
   -- local player = minetest.get_player_by_name(playerName)
   -- player:get_inventory():add_item('main', 'default:mese 1')
 
-  print("giveme Item:", modName, name, dump(item))
+  -- print("giveme Item:", modName, name, dump(item))
   local result = callChatCmd("giveme", playerName, {modName .. ":" .. name, count})
   if not result then
     minetest.chat_send_player(playerName, S("Can't get '@1'", T(title)))

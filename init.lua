@@ -1,10 +1,14 @@
--- play_challenge/init.lua
-minetest.log("info", "Loading play_challenge Mod")
+-- quiz/init.lua
+local MOD_NAME = minetest.get_current_modname()
+quiz = rawget(_G, MOD_NAME)
+if quiz then return end
+
+quiz = {}
+minetest.log("info", "Loading quiz Mod")
 
 -- local defaultS = default.get_translator
 
 local store = minetest.get_mod_storage()
-local MOD_NAME = minetest.get_current_modname()
 local MOD_PATH = minetest.get_modpath(MOD_NAME) .. "/"
 -- local WORLD_PATH = minetest.get_worldpath() .. "/"
 
@@ -16,15 +20,14 @@ local esc = minetest.formspec_escape
 local settings = yaml.readConfig(MOD_NAME, "config.yml")
 -- print(dump(mod_setting));
 
-play_challenge = rawget(_G, MOD_NAME) or {}
-play_challenge.MOD_NAME = MOD_NAME
-play_challenge.MOD_PATH = MOD_PATH
-play_challenge.settings = settings
-play_challenge.store    = store
-play_challenge.get_translator = S
+quiz.MOD_NAME = MOD_NAME
+quiz.MOD_PATH = MOD_PATH
+quiz.settings = settings
+quiz.store    = store
+quiz.get_translator = S
 
 local quizzes = dofile(MOD_PATH .. "quizzes.lua")
-play_challenge.quizzes = quizzes
+quiz.quizzes = quizzes
 
 local givemeItem = dofile(MOD_PATH.."giveme_item.lua")
 local isOnline = dofile(MOD_PATH.."is_online.lua")
@@ -42,24 +45,25 @@ local dialogClosed = true
 local function getLastLeavedTime(playerName)
   return store:get_int(playerName .. ":leavedTime")
 end
-play_challenge.getLastLeavedTime = getLastLeavedTime
+quiz.getLastLeavedTime = getLastLeavedTime
 
 -- record the last leaved time of a player
 local function setLastLeavedTime(playerName, value)
   return store:set_int(playerName ..":leavedTime", value)
 end
-play_challenge.setLastLeavedTime = setLastLeavedTime
+quiz.setLastLeavedTime = setLastLeavedTime
 
+-- TODO: use this minetest.get_player_information(name).connection_uptime
 local function getUsedTime(playerName)
   return store:get_int(playerName .. ":usedTime")
 end
-play_challenge.getUsedTime = getUsedTime
+quiz.getUsedTime = getUsedTime
 
 -- record the last used time of a player
 local function setUsedTime(playerName, value)
   return store:set_int(playerName ..":usedTime", value)
 end
-play_challenge.setUsedTime = setUsedTime
+quiz.setUsedTime = setUsedTime
 
 local function get_formspec(player_name, title, desc)
   local text = esc(S("Hi, @1", player_name) .. "," .. S("the challenge begins!"))
@@ -273,7 +277,7 @@ local function openQuizView(playerName)
     return true
   end
 end
-play_challenge.openQuizView = openQuizView
+quiz.openQuizView = openQuizView
 
 local function checkGameTime(playerName)
   local currTime = os.time()

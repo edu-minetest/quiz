@@ -1,12 +1,12 @@
-local minetest, play_challenge, yaml = minetest, play_challenge, yaml
+local minetest, quiz, yaml = minetest, quiz, yaml
 
 local log = minetest.log
-local S = play_challenge.get_translator
-local MOD_NAME = play_challenge.MOD_NAME
-local MOD_PATH = play_challenge.MOD_PATH
-local settings = play_challenge.settings
-local quizzes  = play_challenge.quizzes
-local openQuizView = play_challenge.openQuizView
+local S = quiz.get_translator
+local MOD_NAME = quiz.MOD_NAME
+local MOD_PATH = quiz.MOD_PATH
+local settings = quiz.settings
+local quizzes  = quiz.quizzes
+local openQuizView = quiz.openQuizView
 
 local merge = dofile(MOD_PATH .. "merge_table.lua")
 local split = dofile(MOD_PATH .. "split.lua")
@@ -156,7 +156,7 @@ local QuizCRUD = {
   delete = delQuiz,
   reset = function(param, playerName)
     if (type(param) == "string") and param ~= "" then playerName = param end
-    play_challenge.setLastLeavedTime(playerName, 0)
+    quiz.setLastLeavedTime(playerName, 0)
     return true, S("reset @1 successful", playerName)
   end,
   revoke = function(param, playerName)

@@ -1,10 +1,10 @@
 -- Set by the mod to store and retrieve information.
 -- The information is persisted, so after a server restart the information is still available.
-local modstore = play_challenge.store
--- local MOD_NAME = play_challenge.MOD_NAME
-local MOD_PATH = play_challenge.MOD_PATH
-local S = play_challenge.get_translator
-local settings = play_challenge.settings
+local modstore = quiz.store
+-- local MOD_NAME = quiz.MOD_NAME
+local MOD_PATH = quiz.MOD_PATH
+local S = quiz.get_translator
+local settings = quiz.settings
 
 local toBool = dofile(MOD_PATH .. "to_bool.lua")
 local playerAttrs = dofile(MOD_PATH .. "player_attrs.lua")
