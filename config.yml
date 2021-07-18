@@ -1,13 +1,13 @@
 # totalPlayTime unit is minute, 0 means disable totalPlayTime
-totalPlayTime: 2
+totalPlayTime: 20
 # the rest time after playing, unit is minute, 0 means disable resetTime
-restTime: 20
+restTime: 10
 # Whether skip the question which has already be answered correctly.
 skipAnswered: 0
 # checkInterval unit is second
 checkInterval: 5
 # idleInterval unit is minute
-idleInterval: 1
+idleInterval: 5
 # Whether to force the administrator to rest
 forceAdminRest: false
 # the delay time to kick off, unit is second

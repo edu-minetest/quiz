@@ -18,8 +18,15 @@ When logging in, check whether you have enough rest time, based on the recorded 
   * `quiz reset [<playerName>]`: reset the game time of a player
   * `quizAward <list>`: list all awards
   * `quizAward <del> <Index|name>`: delete a award
-  * `quizAward <set> <Index|name> title="Title" [mod="default"] [count=<Number>]`: edit/add the award
+  * `quizAward <set> <Id> title="Title" [mod="default"] [count=<Number>]`: edit/add the award
   * `saveQuiz`: save quizzes to config file.
+  * `totalPlayTime [<minutes>]`: get or set the total play time at most.
+  * `restTime [<min>]`: get or set the rest time at least.
+  * `skipAnswered [true|false]`: get or set whether skip the correct answered.
+  * `idleInterval [<minutes>]`: get or set the time between answering quiz.
+  * `forceAdminRest [true|false]`: get or set the whether force the administrator reset too.
+  * `kickDelay [<seconds>]`: get or set the delay time to kick off.
+  * `checkInterval [<seconds>]`: get or set the interval time to check quiz.
 
 `quiz_config.yml` in world folder:
 

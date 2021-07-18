@@ -1,4 +1,5 @@
 # textdomain: quiz
+answer the quiz=
 (Re)load quiz config file=
 Quiz config file loaded.=
 Quiz config file loading failed.=
@@ -14,7 +15,7 @@ remove successfully=
 Invalid index value @1=
 Invalid id value @1=
 reset @1 successful=
-<list|set|del|reset> [<index|id>, title@="Title", answer@="Answer"]=
+<list|set|del|reset|revoke> [<index|id>, title@="Title", answer@="Answer"]=
 manage the quizzes=
 Invalid quiz action: @1=
 Award list=
@@ -24,6 +25,18 @@ Award added=
 <list|set|del> <Index|name> title@="Title" [mod@="default"] [count@=<Number>]=
 manage the awards=
 Invalid award action: @1=
+get or set @1=
+@1 has been changed to @2=
+Invalid param: @1=
+minutes=
+the total maximum play time=
+the rest time at least=
+the time between answering quiz=
+seconds=
+the delay time to kick off=
+the interval time to check quiz=
+whether skip the correct answered=
+whether force the administrator reset too=
 Can't get '@1'=
 You get the @1, count: @2.=
 Hi, @1=

@@ -288,3 +288,66 @@ minetest.register_chatcommand("quizAward", {
     end
   end,
 })
+
+local function boolParam(title, desc)
+  return {
+    params = '[true|false]',
+    description = S("get or set @1", desc),
+    privs = {
+      quiz = true,
+    },
+    func = function(name, param)
+      local value = string.match(param, "(^[tTfF])")
+      local result
+      if ((type(value) == "string") and value ~= "") then
+        local n = string.lower(value) == "t"
+        settings[title] = n
+        result = S("@1 has been changed to @2", title, n)
+      else
+        result = title .. ":" .. tostring(settings[title])
+      end
+      return true, result
+    end,
+  }
+end
+
+local function numerParam(title, unit, desc)
+  return {
+    params = '[<'.. unit .. '>]',
+    description = S("get or set @1", desc),
+    privs = {
+      quiz = true,
+    },
+    func = function(name, param)
+      local value = string.match(param, "(%d+)")
+      local result
+      if ((type(value) == "string") and value ~= "") then
+        local n = tonumber(value)
+        if n then
+          settings[title] = n
+          result = S("@1 has been changed to @2", title, n) .. " " .. unit
+        else
+          return false, S("Invalid param: @1", param)
+        end
+      else
+        result = title .. ":" .. settings[title] .. " " .. unit
+      end
+      return true, result
+    end,
+  }
+end
+
+minetest.register_chatcommand("totalPlayTime",
+  numerParam("totalPlayTime", S("minutes"), S("the total maximum play time")))
+minetest.register_chatcommand("restTime",
+  numerParam("restTime", S("minutes"), S("the rest time at least")))
+minetest.register_chatcommand("idleInterval",
+  numerParam("idleInterval", S("minutes"), S("the time between answering quiz")))
+minetest.register_chatcommand("kickDelay",
+  numerParam("kickDelay", S("seconds"), S("the delay time to kick off")))
+minetest.register_chatcommand("checkInterval",
+  numerParam("checkInterval", S("seconds"), S("the interval time to check quiz")))
+minetest.register_chatcommand("skipAnswered",
+  boolParam("skipAnswered", S("whether skip the correct answered")))
+minetest.register_chatcommand("forceAdminRest",
+  boolParam("forceAdminRest", S("whether force the administrator reset too")))

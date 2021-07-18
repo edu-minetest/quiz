@@ -289,9 +289,9 @@ local function checkGameTime(playerName)
   local lastUsedTime = getUsedTime(playerName) or 0
   local restTime = (settings.restTime or 0) * 60
   local realRestTime = currTime - lastLeavedTime
-  print('TCL:: ~ file: init.lua ~ line 285 ~ register_on_joinplayer lastUsedTime', lastUsedTime);
+  -- print('TCL:: ~ file: init.lua ~ line 285 ~ register_on_joinplayer lastUsedTime', lastUsedTime);
   local totalPlayTime = settings.totalPlayTime * 60 - lastUsedTime
-  print("register_on_joinplayer:", playerName, settings.restTime, totalPlayTime, lastLeavedTime)
+  -- print("register_on_joinplayer:", playerName, settings.restTime, totalPlayTime, lastLeavedTime)
   if totalPlayTime <= 0 and restTime > 0 and lastLeavedTime then
     if (realRestTime < restTime) then
       local leftRestTime = math.floor((restTime - realRestTime) / 60 + 0.5)

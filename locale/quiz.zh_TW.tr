@@ -1,4 +1,5 @@
 # textdomain: quiz
+answer the quiz=回答問題
 (Re)load quiz config file=(重新)加載測驗的配置檔
 Quiz config file loaded.=測驗的配置檔加載完畢
 Quiz config file loading failed.=配置檔加載失敗
@@ -14,7 +15,7 @@ remove successfully=刪除成功
 Invalid index value @1=無效索引值: @1
 Invalid id value @1=無效的id值: @1
 reset @1 successful=@1 時間重置成功
-<list|set|del|reset> [<index|id>, title@="Title", answer@="Answer"]=
+<list|set|del|reset|revoke> [<index|id>, title@="Title", answer@="Answer"]=
 manage the quizzes=管理測驗列表
 Invalid quiz action: @1=(quiz)無效的動作: @1
 Award list=獎品列表
@@ -24,6 +25,18 @@ Award added=獎品已添加
 <list|set|del> <Index|name> title@="Title" [mod@="default"] [count@=<Number>]=
 manage the awards=管理獎品
 Invalid award action: @1=(award)無效的動作: @1
+get or set @1=顯示或者設置 @1
+@1 has been changed to @2= @1 已經被修改為 @2
+Invalid param: @1=無效參數： @1
+minutes=分鐘
+the total maximum play time=最長遊戲時間
+the rest time at least=至少休息時間
+the time between answering quiz=回答問題的間隔時間
+seconds=秒
+the delay time to kick off=踢出遊戲的延遲
+the interval time to check quiz=檢查間隔（一般不用調整）
+whether skip the correct answered=是否跳過已經正確回答的
+whether force the administrator reset too=是否強制管理員也休息
 Can't get '@1'= 無法獲取"@1"
 You get the @1, count: @2.= 你得到了@1, 數量: @2
 Hi, @1= 你好, @1
