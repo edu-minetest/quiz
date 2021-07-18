@@ -1,0 +1,12 @@
+# minetest_game to mineclone2 mapper
+"default:coalblock":
+  id: "mcl_core:coalblock"
+"default:wood":
+  id: "mcl_core:wood"
+"default:stone":
+  id: "mcl_core:stone"
+"default:torch":
+  id: "mcl_torches:torch"
+"default:steel_ingot":
+  id: "mcl_core:iron_ingot"
+  title: "Iron Ingot"
