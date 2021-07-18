@@ -30,9 +30,6 @@ minetest.register_privilege("quiz", {
 
 minetest.register_chatcommand("answer", {
   description = S("answer the quiz"),
-  privs = {
-    quiz = true,
-  },
   func = function(name, param)
     openQuizView(name)
     return true
