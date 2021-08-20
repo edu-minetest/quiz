@@ -340,7 +340,8 @@ minetest.register_on_joinplayer(function(player)
     -- print("doCheck interval:", checkInterval)
 
     if (player) then hudcheck(playerName) end
-    if (dialogClosed and player) then openQuizView(playerName) end
+    local isNeedQuiz = player and (not minetest.check_player_privs(player, "quiz") or settings.forceAdminQuiz)
+    if (dialogClosed and isNeedQuiz) then openQuizView(playerName) end
 
     if (checkInterval > 0) and isOnline(playerName) then
       -- execute after checkInterval seconds

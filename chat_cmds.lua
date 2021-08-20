@@ -348,3 +348,5 @@ minetest.register_chatcommand("skipAnswered",
   boolParam("skipAnswered", S("whether skip the correct answered")))
 minetest.register_chatcommand("forceAdminRest",
   boolParam("forceAdminRest", S("whether force the administrator reset too")))
+minetest.register_chatcommand("forceAdminQuiz",
+  boolParam("forceAdminQuiz", S("whether force the administrator answer quiz too")))
