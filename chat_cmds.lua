@@ -350,3 +350,5 @@ minetest.register_chatcommand("forceAdminRest",
   boolParam("forceAdminRest", S("whether force the administrator reset too")))
 minetest.register_chatcommand("forceAdminQuiz",
   boolParam("forceAdminQuiz", S("whether force the administrator answer quiz too")))
+minetest.register_chatcommand("immediateQuiz",
+  boolParam("immediateQuiz", S("whether ask the quiz immediately after joining the game")))

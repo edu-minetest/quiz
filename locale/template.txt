@@ -38,6 +38,7 @@ the interval time to check quiz=
 whether skip the correct answered=
 whether force the administrator reset too=
 whether force the administrator answer quiz too=
+whether ask the quiz immediately after joining the game=
 Answer=
 manage to quiz=
 Can't get '@1'=

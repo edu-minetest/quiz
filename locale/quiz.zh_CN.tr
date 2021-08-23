@@ -38,6 +38,7 @@ the interval time to check quiz=检查间隔（一般不用调整）
 whether skip the correct answered=是否跳过已经正确回答的
 whether force the administrator reset too=是否强制管理员也休息
 whether force the administrator answer quiz too=是否强制管理员也回答问题
+whether ask the quiz immediately after joining the game=是否在进入游戏后立即提问
 Answer=答
 manage to quiz=管理测验
 Can't get '@1'= 无法获取"@1"

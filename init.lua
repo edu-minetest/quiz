@@ -246,6 +246,7 @@ end
 local function openQuizView(playerName)
   -- if (not aPlayer) then return end
   -- local playerName = aPlayer:get_player_name()
+  -- get the current quiz if no answer passed
   local quiz, errmsg = checkAnswer(playerName)
 
   if quiz and errmsg then return end
@@ -349,10 +350,15 @@ minetest.register_on_joinplayer(function(player)
     end
   end
 
+  local delay = 0
+  if settings.immediateQuiz == false then
+    delay = settings.idleInterval or 5 * 60 --> defaults to 5 min.
+  end
+
   if (settings.checkInterval > 0) then
-    minetest.after(0, doCheck)
+    minetest.after(delay, doCheck)
   else
-    minetest.after(0, function()
+    minetest.after(delay, function()
       hudcheck(playerName)
       openQuizView(playerName)
     end)

@@ -3,7 +3,7 @@ allow_defined_top = true
 
 globals = {
     "minetest",
-    "play_challenge",
+    "quiz",
     "yaml",
     "playtime",
 }
