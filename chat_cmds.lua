@@ -294,12 +294,12 @@ local function boolParam(title, desc)
       quiz = true,
     },
     func = function(name, param)
-      local value = string.match(param, "(^[tTfF])")
+      local value = string.match(param, "^%s*([tTfF])")
       local result
       if ((type(value) == "string") and value ~= "") then
         local n = string.lower(value) == "t"
         settings[title] = n
-        result = S("@1 has been changed to @2", title, n)
+        result = S("@1 has been changed to @2", title, dump(n))
       else
         result = title .. ":" .. tostring(settings[title])
       end
