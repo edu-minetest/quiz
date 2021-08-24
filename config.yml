@@ -10,6 +10,8 @@ checkInterval: 5
 idleInterval: 5
 # Whether to force the administrator to rest
 forceAdminRest: false
+forceAdminQuiz: false
+immediateQuiz: true
 # the delay time to kick off, unit is second
 kickDelay: 2
 awards:
