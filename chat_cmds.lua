@@ -31,7 +31,8 @@ minetest.register_privilege("quiz", {
 minetest.register_chatcommand("answer", {
   description = S("answer the quiz"),
   func = function(name, param)
-    openQuizView(name)
+    local result = openQuizView(name)
+    if result ~= true then return true, S("There are currently no quizs to answer") end
     return true
   end,
 })

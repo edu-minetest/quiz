@@ -1,5 +1,6 @@
 # textdomain: quiz
 answer the quiz=
+There are currently no quizs to answer=
 (Re)load quiz config file=
 Quiz config file loaded.=
 Quiz config file loading failed.=
@@ -39,8 +40,6 @@ whether skip the correct answered=
 whether force the administrator reset too=
 whether force the administrator answer quiz too=
 whether ask the quiz immediately after joining the game=
-Answer=
-manage to quiz=
 Can't get '@1'=
 You get the @1, count: @2.=
 Hi, @1=
@@ -57,6 +56,8 @@ You should quit game.=
 It will automatically exit after 1 minute.=
 Game time is over, please rest your eyes.=
 @1 has leaved=
+Answer=
+manage to quiz=
 @1 may be offline=
 No any quiz defined=
 invalid quiz=

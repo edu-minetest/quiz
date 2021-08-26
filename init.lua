@@ -32,9 +32,6 @@ quiz.quizzes = quizzes
 local givemeItem = dofile(MOD_PATH.."giveme_item.lua")
 local isOnline = dofile(MOD_PATH.."is_online.lua")
 
--- register chat commands
-dofile(MOD_PATH.."chat_cmds.lua")
-
 -- LUALOCALS < ---------------------------------------------------------
 local minetest, pairs, type
     = minetest, pairs, type
@@ -248,6 +245,7 @@ local function openQuizView(playerName)
   -- local playerName = aPlayer:get_player_name()
   -- get the current quiz if no answer passed
   local quiz, errmsg = checkAnswer(playerName)
+  print(quiz, errmsg)
 
   if quiz and errmsg then return end
   -- print('TCL:: ~ file: init.lua ~ line 112 ~ playerName', playerName);
@@ -380,3 +378,6 @@ end)
 --     on_grant = hudcheck,
 --     on_revoke = hudcheck
 --   })
+
+-- register chat commands
+dofile(MOD_PATH.."chat_cmds.lua")
