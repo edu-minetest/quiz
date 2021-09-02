@@ -245,7 +245,6 @@ local function openQuizView(playerName)
   -- local playerName = aPlayer:get_player_name()
   -- get the current quiz if no answer passed
   local quiz, errmsg = checkAnswer(playerName)
-  print(quiz, errmsg)
 
   if quiz and errmsg then return end
   -- print('TCL:: ~ file: init.lua ~ line 112 ~ playerName', playerName);
