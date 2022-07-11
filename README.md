@@ -30,7 +30,7 @@ When logging in, check whether you have enough rest time, based on the recorded 
   * `forceAdminQuiz [true|false]`: get or set the whether force the administrator answer the quiz too. defaults to false.
   * `immediateQuiz [true|false]`: get or set the whether ask the quiz immediately after joining the game. defaults to true.
 
-`quiz_config.yml` in world folder:
+Put the `quiz_config.yml` file in world folder:
 
 ```yaml
 # the revoke or grant privileges, defaults to "interact,shout"
@@ -78,5 +78,9 @@ quiz:
   - id: theYear
     title: "What's the year?"
     answer: 2021
+  - title: "18/7=?"
+    answer: "/^2%.%.%.+4/" # the lua string pattern: 2...4 (three dots and more)
 ```
+
+The `answer` supports the [Lua string pattern](https://www.lua.org/pil/20.2.html) enclosed in "/" slashes.
 

@@ -138,7 +138,14 @@ local function check(playerName, answer, quiz)
       elseif vType == "boolean" then
         answer = toBool(answer)
       end
-      if answer == quiz.answer then
+      local ok = false
+      if vType == "string" and string.sub(vRealAnswer, 1, 1) == "/" and string.sub(vRealAnswer, -1) == "/" then
+        vRealAnswer = vRealAnswer:sub(2, #vRealAnswer-1)
+        ok = answer:find(vRealAnswer) ~= nil
+      elseif answer == vRealAnswer then
+        ok = true
+      end
+      if ok then
         local answeredName = quizId ..":answered"
         local answered = playerAttrs.getQuiz(attrs, answeredName)
         answered = answered + 1
