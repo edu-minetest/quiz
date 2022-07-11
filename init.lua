@@ -1,7 +1,7 @@
 -- quiz/init.lua
 local MOD_NAME = minetest.get_current_modname()
-quiz = rawget(_G, MOD_NAME)
-if quiz then return end
+
+if rawget(_G, MOD_NAME) then return end
 
 quiz = {}
 minetest.log("info", "Loading quiz Mod")
