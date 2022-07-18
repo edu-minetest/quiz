@@ -29,6 +29,9 @@ TODO: 可以在单人游戏增加一个管理密码,只有密码输入正确才�
 
 需要增加问题类别: 计算类型,自动出计算题
 
+除法余数的处理? 如果有余数只允许最后一个操作符是除法.
+如何挑选能被整除的数?
+
 - Remove interact (and possibly other privs) from default_privs.
 - Add any additional privs to `grant` in the `play_challenge.conf` config file.
 
@@ -36,6 +39,94 @@ play_challenge.conf:
 
 单选多选还是匹配答案即可,只要支持模式匹配即可.
 answer增加Lua字符模式匹配,模式匹配使用斜杆表示:`/字符模式/`
+
+没法子了,孩子把答案都记住了,手工出题目太麻烦,还是增加自动出计算题类别(`calc`): 随机产生数字四则计算的类别
+n: 随机数字(0-9)
+N: 随机非零数字(1-9)
+[1-3]: 随机指定数字范围
+[+-]: 随机指定操作符
+
+```yml
+quiz:
+  - title: "$calc=?"
+    type: "calc"
+    answer: "nn[+*]n+2"
+  - title: "$calc=?"
+    type: "calc"
+    forceInt: true
+    answer: "(Nn+3)/N"
+```
+
+```lua
+function parse_charset(s)
+  local result = ""
+  local i = 1
+  while i <= #s do
+    local c = s:sub(i,i)
+    if string.find(c, "%d") then
+      local next_c = s:sub(i+1,i+1)
+      local to_c = s:sub(i+2,i+2)
+      if next_c == "-" and string.find(to_c, "%d") then
+
+        local n_from = tonumber(c)
+        local n_to = tonumber(to_c)
+        if n_from > n_to then
+          local t = n_from
+          n_from = n_to
+          n_to = t
+        end
+        for j = n_from, n_to do
+          result = result .. j
+        end
+        i = i + 2
+      else
+        result = result .. c
+      end
+    else
+      result = result .. c
+    end
+    i = i + 1
+  end
+  return result
+end
+function parse_calc_type_str(s)
+  local result = ""
+  local i = 1
+  while i <= #s do
+    local c = s:sub(i,i)
+    if c == "n" then
+      result = result .. math.random(0, 9)
+    elseif c == "N" then
+      result = result .. math.random(1, 9)
+    elseif c == "[" then
+      local t = ""
+      repeat
+        i = i + 1
+        c = s:sub(i,i)
+        if c ~= "]" then t = t .. c end
+      until c == "]" or i > #s
+      if #t > 0 then
+        local charset = parse_charset(t)
+        local ix = math.random(1, #charset)
+        result = result .. charset:sub(ix, ix)
+      end
+    elseif string.find(c, "[%+-*/()^%d.]") then
+      result = result .. c
+    end
+    i = i + 1
+  end
+  return result
+end
+
+function compile_expr(s)
+  return loadstring("return " .. s)
+end
+
+function run_expr(s)
+  return compile_expr(s)()
+end
+
+```
 
 the quiz types: string, number, string[], number[]
 

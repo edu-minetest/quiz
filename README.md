@@ -80,7 +80,16 @@ quiz:
     answer: 2021
   - title: "18/7=?"
     answer: "/^2%.%.%.+4/" # the lua string pattern: 2...4 (three dots and more)
+  - title: "$calc=?"
+    type: calc
+    forceInt: true         # the result must be an integer
+    answer: "(Nn*n+n)/(Nn-n)"
 ```
 
-The `answer` supports the [Lua string pattern](https://www.lua.org/pil/20.2.html) enclosed in "/" slashes.
-
+1. The `answer` supports the [Lua string pattern](https://www.lua.org/pil/20.2.html) enclosed in "/" slashes.
+2. The `answer` supports generate simple four arithmetic expressions randomly(`type: calc`)
+   * The division operation must be the last one
+   * `forceInt` means the result of the expression is integer only.
+   * `N`: generate a none-zero number(1-9)
+   * `n`: generate a number(0-9)
+   * `[1-39]`: the set(range) of numbers(from 1 to 3) and number 9

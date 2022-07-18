@@ -253,7 +253,7 @@ local function openQuizView(playerName)
     if fields.quit == minetest.FORMSPEC_SIGTIME then
       local vQuiz, vErrmsg = quizzes.getCurrent(playerName)
       if vQuiz and not vErrmsg then
-        minetest.update_form(playerName, get_formspec(playerName, vQuiz.title, vQuiz.desc))
+        minetest.update_form(playerName, get_formspec(playerName, quizzes.getTitle(vQuiz), vQuiz.desc))
         return
       end
       -- local result = checkAnswer(playerName, fields.answer, vQuiz)

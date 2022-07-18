@@ -8,6 +8,7 @@ local settings = quiz.settings
 
 local toBool = dofile(MOD_PATH .. "to_bool.lua")
 local playerAttrs = dofile(MOD_PATH .. "player_attrs.lua")
+local calcType = dofile(MOD_PATH .. "calc_type.lua")
 local Quizzes = {}
 -- record player last answered time
 local lastAnswered = {}
@@ -132,11 +133,23 @@ local function check(playerName, answer, quiz)
     local quizId= id(quiz)
     if (type(answer) == "string") and answer ~= "" then
       local vRealAnswer = quiz.answer
-      local vType = type(vRealAnswer)
+      local vType = quiz["type"] or type(vRealAnswer)
       if vType == "number" then
         answer = tonumber(answer)
       elseif vType == "boolean" then
         answer = toBool(answer)
+      elseif vType == "calc" then
+        if quiz["real_answer"] ~= nil then
+          vRealAnswer = quiz["real_answer"]
+        else
+          vRealAnswer = calcType.execute(quiz["calc"], true)
+        end
+        if type(vRealAnswer) == "table" then
+          vType = "string"
+          vRealAnswer = "/^" .. vRealAnswer[1] .. "%.%.%.+" .. vRealAnswer[2] .. "/"
+        else
+          answer = tonumber(answer)
+        end
       end
       local ok = false
       if vType == "string" and string.sub(vRealAnswer, 1, 1) == "/" and string.sub(vRealAnswer, -1) == "/" then
@@ -165,10 +178,23 @@ local function check(playerName, answer, quiz)
   return quiz, errmsg
 end
 
+local function getTitle(quiz)
+  if quiz["type"] == "calc" then
+    local expr = calcType.parse(quiz.answer, quiz.forceInt)
+    quiz["calc"] = expr
+    quiz["real_answer"] = calcType.execute(expr, true)
+  end
+  local result = sting.gsub(quiz.title, "$(%w+)", function (n)
+    return quiz[n]
+  end)
+  return result
+end
+
 Quizzes.getCurrent = getCurrent
 Quizzes.setCurrent = setCurrent
 Quizzes.check = check
 Quizzes.next = next
 Quizzes.id = id
+Quizzes.getTitle = getTitle
 
 return Quizzes
