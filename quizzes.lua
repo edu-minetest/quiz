@@ -184,7 +184,7 @@ local function getTitle(quiz)
     quiz["calc"] = expr
     quiz["real_answer"] = calcType.execute(expr, true)
   end
-  local result = sting.gsub(quiz.title, "$(%w+)", function (n)
+  local result = string.gsub(quiz.title, "$(%w+)", function (n)
     return quiz[n]
   end)
   return result

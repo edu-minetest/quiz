@@ -270,7 +270,7 @@ local function openQuizView(playerName)
   end
   if (type(quiz) == "table") then
     dialogClosed = false
-    minetest.create_form(nil, playerName, get_formspec(playerName, quiz.title, quiz.desc), on_close)
+    minetest.create_form(nil, playerName, get_formspec(playerName, quizzes.getTitle(quiz), quiz.desc), on_close)
     -- minetest.get_form_timer(playerName).start(1)
     return true
   end
