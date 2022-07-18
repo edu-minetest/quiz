@@ -93,3 +93,5 @@ quiz:
    * `N`: generate a none-zero number(1-9)
    * `n`: generate a number(0-9)
    * `[1-39]`: the set(range) of numbers(from 1 to 3) and number 9
+   * `[+-*/]`: the set(range) of operations.
+     * Note: The division operation must be the last!
