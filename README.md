@@ -84,6 +84,13 @@ quiz:
     type: calc
     forceInt: true         # the result must be an integer
     answer: "(Nn*n+n)/(Nn-n)"
+  - title: "howto select?"
+    type: "select"
+    options:
+      - Red
+      - Blue
+      - Green
+    answer: [1,2]
 ```
 
 1. The `answer` supports the [Lua string pattern](https://www.lua.org/pil/20.2.html) enclosed in "/" slashes.
@@ -95,3 +102,6 @@ quiz:
    * `[1-39]`: the set(range) of numbers(from 1 to 3) and number 9
    * `[+-*/]`: the set(range) of operations.
      * Note: The division operation must be the last!
+3. Multiple choice questions supported(`type: select`)
+   * `options`: list items to be selected.
+   * `answer`: the sequence number of the correct option.

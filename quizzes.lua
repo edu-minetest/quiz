@@ -9,6 +9,8 @@ local settings = quiz.settings
 local toBool = dofile(MOD_PATH .. "to_bool.lua")
 local playerAttrs = dofile(MOD_PATH .. "player_attrs.lua")
 local calcType = dofile(MOD_PATH .. "calc_type.lua")
+local isArrayEqu = dofile(MOD_PATH .. "is_array_equ.lua")
+
 local Quizzes = {}
 -- record player last answered time
 local lastAnswered = {}
@@ -131,7 +133,7 @@ local function check(playerName, answer, quiz)
   if quiz then
     local attrs = player:get_meta()
     local quizId= id(quiz)
-    if (type(answer) == "string") and answer ~= "" then
+    if answer ~= "" then
       local vRealAnswer = quiz.answer
       local vType = quiz["type"] or type(vRealAnswer)
       if vType == "number" then
@@ -149,6 +151,13 @@ local function check(playerName, answer, quiz)
           vRealAnswer = "/^" .. vRealAnswer[1] .. "%.%.%.+" .. vRealAnswer[2] .. "/"
         else
           answer = tonumber(answer)
+        end
+      elseif vType == "select" then
+        answer = table.concat(answer, ",")
+        if type(vRealAnswer) == "table" then
+          vRealAnswer = table.concat(table.sort(vRealAnswer), ",")
+        else
+          vRealAnswer = "" .. vRealAnswer
         end
       end
       local ok = false

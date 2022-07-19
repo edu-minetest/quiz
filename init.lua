@@ -62,25 +62,37 @@ local function setUsedTime(playerName, value)
 end
 quiz.setUsedTime = setUsedTime
 
-local function get_formspec(player_name, title, desc)
-  local text = esc(S("Hi, @1", player_name) .. "," .. S("the challenge begins!"))
-  title = esc(title or "")
-  if desc then desc = esc(desc or "") end
-  local question = esc(S("Question"))
-  local answer = esc(S("Answer"))
+local function get_formspec(player_name, quiz)
+  player_name = esc(S("Hi, @1", player_name) .. "," .. S("the challenge begins!"))
+  local title = esc(quizzes.getTitle(quiz) or "")
+  local desc = esc(quiz.desc or "")
+  local questionStr = esc(S("Question"))
+  local answerStr = esc(S("Answer"))
   local formspec = {
     "formspec_version[4]",
     "size[10,9]",
     "label[0,0.2;", text, "]",
     "box[0.4,1.1;9.2,4.25;#999999]",
-    "textarea[0.4,1.1;9.2,4.25;;",question, ";" , title, "]",
-    "field[0.4,6;9.2,0.9;answer;", answer, ";]",
+    "textarea[0.4,1.1;9.2,4.25;;",questionStr, ";" , title, "]",
   }
-  if desc then formspec[#formspec+1] = "label[0.4,7.2;".. desc .."]" end
+  if desc then formspec[#formspec+1] = "label[1.8,0.9;(".. desc ..")]" end
   formspec[#formspec+1] = "button_exit[3.2,8;3.5,0.8;ok;Ok]"
+  local options = quiz.options
+  if quiz.type == "select" and options then
+    local x = 0.5
+    local y = 5.9
+    for i=1,#options do
+      x = x + (i-1) % 3 * 3.5
+      y = y + math.modf((i-1) % 3) * 0.6
+      formspec[#formspec+1] = "checkbox[".. x .. "," .. y .. ";opt".. i .. ";" .. options[i] .. "]"
+    end
+  else
+    formspec[#formspec+1] = "field[0.4,6;9.2,0.9;answer;" .. answerStr .. ";]"
+  end
 
   -- table.concat is faster than string concatenation - `..`
   return table.concat(formspec, "")
+
 end
 
 -- local motddesc = conf("get", "desc") or "terms"
@@ -198,7 +210,20 @@ local function grantPriv(playerName)
   end
 end
 
-local function checkAnswer(playerName, answer, quiz)
+local function checkAnswer(playerName, fields, quiz)
+  local answer
+  local options = quiz.options
+  if quiz.type == "select" and #options then
+    answer = {}
+    for i=1, #options do
+      if fields["opt" .. i] then
+        table.insert(answer, i)
+      end
+    end
+  else
+    answer = fields.anwser
+  end
+
   -- local playerName = aPlayer:get_player_name()
   local result, errmsg = quizzes.check(playerName, answer, quiz)
   if errmsg then
@@ -253,13 +278,13 @@ local function openQuizView(playerName)
     if fields.quit == minetest.FORMSPEC_SIGTIME then
       local vQuiz, vErrmsg = quizzes.getCurrent(playerName)
       if vQuiz and not vErrmsg then
-        minetest.update_form(playerName, get_formspec(playerName, quizzes.getTitle(vQuiz), vQuiz.desc))
+        minetest.update_form(playerName, get_formspec(playerName, vQuiz))
         return
       end
       -- local result = checkAnswer(playerName, fields.answer, vQuiz)
     end
     dialogClosed = true
-    checkAnswer(playerName, fields.answer, quiz)
+    checkAnswer(playerName, fields, quiz)
     --   minetest.update_form(playerName, get_formspec(playerName, quiz.title, quiz.desc))
     -- elseif fields.answer and quiz.answer == fields.answer then
     --   minetest.get_form_timer(playerName).stop()
@@ -270,7 +295,7 @@ local function openQuizView(playerName)
   end
   if (type(quiz) == "table") then
     dialogClosed = false
-    minetest.create_form(nil, playerName, get_formspec(playerName, quizzes.getTitle(quiz), quiz.desc), on_close)
+    minetest.create_form(nil, playerName, get_formspec(playerName, quiz), on_close)
     -- minetest.get_form_timer(playerName).start(1)
     return true
   end

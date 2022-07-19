@@ -125,6 +125,10 @@ local function execute(s, useMod)
   return v
 end
 
+math.randomseed(os.clock()*100000000000)
+for i=1,math.random(3,15) do
+  math.random()
+end
 
 return {
   remove_dup_str = remove_dup_str,
