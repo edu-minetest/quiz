@@ -90,9 +90,12 @@ local function get_formspec(player_name, quiz)
   }
   if desc and desc ~= "" then table.insert(formspec, "label[1.8,0.8;(".. desc ..")]") end
   table.insert(formspec, "button_exit[3.2,8;3.5,0.8;ok;Ok]")
-  local options = mergeTable({}, quiz.options)
-  array.shuffle(options)
-  fields._options = options
+  local options = fields._options
+  if options == nil then
+    options = mergeTable({}, quiz.options)
+    array.shuffle(options)
+    fields._options = options
+  end
   if quiz.type == "select" and options and #options then
     local ox = 0.5
     local oy = 5.9
@@ -232,13 +235,12 @@ end
 
 local function checkAnswer(playerName, fields, quiz)
   local answer
-  local qOptions = quiz.options
-  if quiz and quiz.type == "select" and #qOptions then
+  if quiz and quiz.type == "select" and #quiz.options then
     answer = {}
-    local options = fields.options
-    for i=1, #qOptions do
+    local options = fields._options
+    for i=1, #quiz.options do
       if fields["opt" .. i] == "true" then
-        table.insert(answer, array.find(options[i]))
+        table.insert(answer, array.find(quiz.options, options[i]))
       end
     end
   else
