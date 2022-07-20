@@ -84,17 +84,18 @@ quiz:
     type: calc
     forceInt: true         # the result must be an integer
     answer: "(Nn*n+n)/(Nn-n)"
-  - title: "howto select?"
+  - title: "What is the part of the plant that uses light to make food?"
     type: "select"
     options:
-      - Red
-      - Blue
-      - Green
-    answer: [1,2]
+      - leaves
+      - roots
+      - stem
+      - flowers
+    answer: 1
 ```
 
-1. The `answer` supports the [Lua string pattern](https://www.lua.org/pil/20.2.html) enclosed in "/" slashes.
-2. The `answer` supports generate simple four arithmetic expressions randomly(`type: calc`)
+1. The `answer` supports the [Lua string pattern](https://www.lua.org/pil/20.2.html) enclosed in "/" slashes.(0.6.0)
+2. The `answer` supports generate simple four arithmetic expressions randomly(`type: calc`)(0.7.0)
    * The division operation must be the last one
    * `forceInt` means the result of the expression is integer only.
    * `N`: generate a none-zero number(1-9)
@@ -102,6 +103,7 @@ quiz:
    * `[1-39]`: the set(range) of numbers(from 1 to 3) and number 9
    * `[+-*/]`: the set(range) of operations.
      * Note: The division operation must be the last!
-3. Multiple choice questions supported(`type: select`)
+3. Multiple choice questions supported(`type: select`)(0.8.0)
    * `options`: list items to be selected.
    * `answer`: the sequence number of the correct option.
+     * **Note**: must sort from small to large
