@@ -56,9 +56,9 @@ describe("calc_type.execute", function()
   end)
 
   it("execute div integer expression:" , function()
-    local r,d = calc.execute("(13+3)/3", true)
-    assert.equals(5, r)
-    assert.equals(1, d)
+    local r = calc.execute("(13+3)/3", true)
+    assert.equals(5, r[1])
+    assert.equals(1, r[2])
   end)
 end)
 
