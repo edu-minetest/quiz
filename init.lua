@@ -39,15 +39,32 @@ local minetest, pairs, type
     = minetest, pairs, type
 -- LUALOCALS > ---------------------------------------------------------
 
-local dialogClosed = true
--- collects the fields of a player
-local curFields = {}
+-- collects the player's sessions
+local sessions = {}
 
-local function getFields(playerName)
-  local result = curFields[playerName]
+local function getSession(playerName)
+  local result = sessions[playerName]
   if result == nil then
     result = {}
-    curFields[playerName] = result
+    sessions[playerName] = result
+    result.dialogClosed = true
+  end
+  return result
+end
+
+local function clearSession(playerName)
+  local result = sessions[playerName]
+  if result ~= nil then
+    sessions[playerName] = nil
+  end
+end
+
+local function getFields(playerName, session)
+  if session == nil then session = getSession(playerName) end
+  local result = session.fields
+  if result == nil then
+    result = {}
+    session.fields = result
   end
   return result
 end
@@ -75,8 +92,8 @@ local function setUsedTime(playerName, value)
 end
 quiz.setUsedTime = setUsedTime
 
-local function get_formspec(player_name, quiz)
-  local fields = getFields(player_name)
+local function get_formspec(player_name, quiz, session)
+  local fields = getFields(player_name, session)
   player_name = esc(S("Hi, @1", player_name) .. "," .. S("the challenge begins!"))
   local title = esc(quizzes.getTitle(quiz) or "")
   local desc = esc(quiz.desc or "")
@@ -143,6 +160,7 @@ local function resetWhenLeaving(playerName)
     setLastLeavedTime(playerName, currTime)
     setUsedTime(playerName, usedTime)
   end
+  clearSession(playerName)
 end
 
 local function kickPlayer(playerName, reason)
@@ -294,26 +312,27 @@ local function openQuizView(playerName)
   -- local playerName = aPlayer:get_player_name()
   -- get the current quiz if no answer passed
   local quiz, errmsg = checkAnswer(playerName)
+  local session = getSession(playerName)
 
   if quiz and errmsg then return end
   -- print('TCL:: ~ file: init.lua ~ line 112 ~ playerName', playerName);
 
   local function on_close(state, player, fields)
-    state = getFields(playerName)
+    state = getFields(playerName, session)
     mergeTable(state, fields)
     -- print('TCL:: ~ file: init.lua ~ line 288 ~ onclose player:', playerName, dump(state));
     if fields.quit == minetest.FORMSPEC_SIGTIME then -- timeout reached
       local vQuiz, vErrmsg = quizzes.getCurrent(playerName)
       if vQuiz and not vErrmsg then
-        minetest.update_form(playerName, get_formspec(playerName, vQuiz))
+        minetest.update_form(playerName, get_formspec(playerName, vQuiz, session))
         return
       end
       -- local result = checkAnswer(playerName, fields.answer, vQuiz)
     end
-    dialogClosed = true
+    session.dialogClosed = true
     if fields.quit == "true" then
       checkAnswer(playerName, state, quiz)
-      curFields[playerName] = {}
+      session.fields = {}
     end
     --   minetest.update_form(playerName, get_formspec(playerName, quiz.title, quiz.desc))
     -- elseif fields.answer and quiz.answer == fields.answer then
@@ -325,8 +344,8 @@ local function openQuizView(playerName)
   end
 
   if (type(quiz) == "table") then
-    dialogClosed = false
-    minetest.create_form(nil, playerName, get_formspec(playerName, quiz), on_close)
+    session.dialogClosed = false
+    minetest.create_form(nil, playerName, get_formspec(playerName, quiz, session), on_close)
     -- minetest.get_form_timer(playerName).start(1)
     return true
   end
@@ -388,6 +407,7 @@ minetest.register_on_joinplayer(function(player)
   if settings.forceAdminRest or not isAdmin then checkGameTime(playerName) end
   -- minetest.is_singleplayer()
   if isAdmin then return end
+  local session = getSession(playerName)
 
   local function doCheck()
     local checkInterval = settings.checkInterval
@@ -395,7 +415,7 @@ minetest.register_on_joinplayer(function(player)
 
     if (player) then hudcheck(playerName) end
     local isNeedQuiz = type(playerName) == "string" and (not minetest.check_player_privs(playerName, "quiz") or settings.forceAdminQuiz)
-    if (dialogClosed and isNeedQuiz) then openQuizView(playerName) end
+    if (session.dialogClosed and isNeedQuiz) then openQuizView(playerName) end
 
     if (checkInterval > 0) and isOnline(playerName) then
       -- execute after checkInterval seconds
