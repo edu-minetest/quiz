@@ -155,7 +155,8 @@ local function check(playerName, answer, quiz)
       elseif vType == "select" then
         answer = table.concat(answer, ",")
         if type(vRealAnswer) == "table" then
-          vRealAnswer = table.concat(table.sort(vRealAnswer), ",")
+          table.sort(vRealAnswer)
+          vRealAnswer = table.concat(vRealAnswer, ",")
         else
           vRealAnswer = "" .. vRealAnswer
         end
