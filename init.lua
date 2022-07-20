@@ -11,6 +11,8 @@ minetest.log("info", "Loading quiz Mod")
 local store = minetest.get_mod_storage()
 local MOD_PATH = minetest.get_modpath(MOD_NAME) .. "/"
 -- local WORLD_PATH = minetest.get_worldpath() .. "/"
+local mergeTable = dofile(MOD_PATH .. "merge_table.lua")
+local array = dofile(MOD_PATH .. "array.lua")
 
 -- Load support for MT game translation.
 local S = minetest.get_translator(MOD_NAME)
@@ -38,6 +40,17 @@ local minetest, pairs, type
 -- LUALOCALS > ---------------------------------------------------------
 
 local dialogClosed = true
+-- collects the fields of a player
+local curFields = {}
+
+local function getFields(playerName)
+  local result = curFields[playerName]
+  if result == nil then
+    result = {}
+    curFields[playerName] = result
+  end
+  return result
+end
 
 local function getLastLeavedTime(playerName)
   return store:get_int(playerName .. ":leavedTime")
@@ -63,6 +76,7 @@ end
 quiz.setUsedTime = setUsedTime
 
 local function get_formspec(player_name, quiz)
+  local fields = getFields(player_name)
   player_name = esc(S("Hi, @1", player_name) .. "," .. S("the challenge begins!"))
   local title = esc(quizzes.getTitle(quiz) or "")
   local desc = esc(quiz.desc or "")
@@ -71,23 +85,29 @@ local function get_formspec(player_name, quiz)
   local formspec = {
     "formspec_version[4]",
     "size[10,9]",
-    "label[0,0.2;", text, "]",
     "box[0.4,1.1;9.2,4.25;#999999]",
     "textarea[0.4,1.1;9.2,4.25;;",questionStr, ";" , title, "]",
   }
-  if desc then formspec[#formspec+1] = "label[1.8,0.9;(".. desc ..")]" end
-  formspec[#formspec+1] = "button_exit[3.2,8;3.5,0.8;ok;Ok]"
-  local options = quiz.options
-  if quiz.type == "select" and options then
-    local x = 0.5
-    local y = 5.9
+  if desc and desc ~= "" then table.insert(formspec, "label[1.8,0.8;(".. desc ..")]") end
+  table.insert(formspec, "button_exit[3.2,8;3.5,0.8;ok;Ok]")
+  local options = mergeTable({}, quiz.options)
+  array.shuffle(options)
+  fields._options = options
+  if quiz.type == "select" and options and #options then
+    local ox = 0.5
+    local oy = 5.9
+    local x = ox
+    local y = oy
+    local columnCount = 3
     for i=1,#options do
-      x = x + (i-1) % 3 * 3.5
-      y = y + math.modf((i-1) % 3) * 0.6
-      formspec[#formspec+1] = "checkbox[".. x .. "," .. y .. ";opt".. i .. ";" .. options[i] .. "]"
+      local fraq = (i-1) % columnCount
+      x = ox + fraq * 3.5
+      y = oy + math.modf((i-1) / columnCount) * 0.6
+      table.insert(formspec, "checkbox[".. x .. "," .. y .. ";opt".. i .. ";" .. options[i] .. "]")
+      if fraq == (columnCount - 1) then x = ox end
     end
   else
-    formspec[#formspec+1] = "field[0.4,6;9.2,0.9;answer;" .. answerStr .. ";]"
+    table.insert(formspec, "field[0.4,6;9.2,0.9;answer;" .. answerStr .. ";]")
   end
 
   -- table.concat is faster than string concatenation - `..`
@@ -212,20 +232,22 @@ end
 
 local function checkAnswer(playerName, fields, quiz)
   local answer
-  local options = quiz.options
-  if quiz.type == "select" and #options then
+  local qOptions = quiz.options
+  if quiz and quiz.type == "select" and #qOptions then
     answer = {}
-    for i=1, #options do
-      if fields["opt" .. i] then
-        table.insert(answer, i)
+    local options = fields.options
+    for i=1, #qOptions do
+      if fields["opt" .. i] == "true" then
+        table.insert(answer, array.find(options[i]))
       end
     end
   else
-    answer = fields.anwser
+    answer = fields and fields.answer
   end
 
   -- local playerName = aPlayer:get_player_name()
   local result, errmsg = quizzes.check(playerName, answer, quiz)
+  -- print('TCL:: ~ file: checkAnswer.lua ~ line 235 ~ result', dump(result), dump(errmsg));
   if errmsg then
     if result then
       -- all questions are answered!
@@ -273,9 +295,12 @@ local function openQuizView(playerName)
 
   if quiz and errmsg then return end
   -- print('TCL:: ~ file: init.lua ~ line 112 ~ playerName', playerName);
+
   local function on_close(state, player, fields)
-    -- print('TCL:: ~ file: init.lua ~ line 114 ~ onclose', playerName, dump(fields));
-    if fields.quit == minetest.FORMSPEC_SIGTIME then
+    state = getFields(playerName)
+    mergeTable(state, fields)
+    -- print('TCL:: ~ file: init.lua ~ line 288 ~ onclose player:', playerName, dump(state));
+    if fields.quit == minetest.FORMSPEC_SIGTIME then -- timeout reached
       local vQuiz, vErrmsg = quizzes.getCurrent(playerName)
       if vQuiz and not vErrmsg then
         minetest.update_form(playerName, get_formspec(playerName, vQuiz))
@@ -284,7 +309,10 @@ local function openQuizView(playerName)
       -- local result = checkAnswer(playerName, fields.answer, vQuiz)
     end
     dialogClosed = true
-    checkAnswer(playerName, fields, quiz)
+    if fields.quit == "true" then
+      checkAnswer(playerName, state, quiz)
+      curFields[playerName] = {}
+    end
     --   minetest.update_form(playerName, get_formspec(playerName, quiz.title, quiz.desc))
     -- elseif fields.answer and quiz.answer == fields.answer then
     --   minetest.get_form_timer(playerName).stop()
@@ -293,6 +321,7 @@ local function openQuizView(playerName)
     --   minetest.get_form_timer(playerName).start(1)
     -- end
   end
+
   if (type(quiz) == "table") then
     dialogClosed = false
     minetest.create_form(nil, playerName, get_formspec(playerName, quiz), on_close)

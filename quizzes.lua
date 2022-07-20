@@ -9,7 +9,7 @@ local settings = quiz.settings
 local toBool = dofile(MOD_PATH .. "to_bool.lua")
 local playerAttrs = dofile(MOD_PATH .. "player_attrs.lua")
 local calcType = dofile(MOD_PATH .. "calc_type.lua")
-local isArrayEqu = dofile(MOD_PATH .. "is_array_equ.lua")
+-- local isArrayEqu = dofile(MOD_PATH .. "array.lua").equal
 
 local Quizzes = {}
 -- record player last answered time
@@ -105,7 +105,7 @@ local function next(playerName)
 end
 
 local function check(playerName, answer, quiz)
-  -- print('TCL:: ~ file: quizzes.lua ~ line 83 ~ check - playerName, answer, quiz', playerName, answer, quiz);
+  -- print('TCL:: ~ file: quizzes.lua ~ line 108 ~ check - playerName, answer, quiz', playerName, answer, dump(quiz));
   if not quiz and not answer then
     -- check whether it's idletime if no provide answer
     local idletime = settings.idleInterval
@@ -129,11 +129,11 @@ local function check(playerName, answer, quiz)
   if type(quiz) ~= "table" then
     quiz, errmsg = getCurrent(playerName)
   end
-  -- print('TCL:: ~ file: quizzes.lua ~ line 95 ~ check quiz', dump(quiz));
+  -- print('TCL:: ~ file: quizzes.lua ~ line 132 ~ check quiz', dump(quiz));
   if quiz then
     local attrs = player:get_meta()
     local quizId= id(quiz)
-    if answer ~= "" then
+    if answer ~= nil then
       local vRealAnswer = quiz.answer
       local vType = quiz["type"] or type(vRealAnswer)
       if vType == "number" then
