@@ -388,13 +388,14 @@ local function checkGameTime(playerName)
     setUsedTime(playerName, 0)
     minetest.after(totalPlayTime, function()
       if isOnline(playerName) then
+        local restTimeMin = math.modf(restTime / 60)
         minetest.chat_send_player(playerName, S("Hi, @1", playerName) .. ".\n" ..
-          S("Game time is over, please rest your eyes.") .. "\n" ..
+          S("Game time is over, please rest your eyes for at least @1 minutes.", restTimeMin) .. "\n" ..
           S("You should quit game.") .. "\n" ..
           S("It will automatically exit after 1 minute.")
         )
         minetest.after(kickDelay, function()
-          kickPlayer(playerName, S("Game time is over, please rest your eyes."))
+          kickPlayer(playerName, S("Game time is over, please rest your eyes for at least @1 minutes.", restTimeMin))
         end)
       end
     end)
