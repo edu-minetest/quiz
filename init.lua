@@ -156,7 +156,7 @@ local function resetWhenLeaving(playerName)
   local enterTime = joinTime[playerName] or 0
   -- joinTime[playerName] = nil
   local currTime = os.time()
-  local usedTime = getUsedTime(playerName) + currTime - enterTime
+  local usedTime = currTime - enterTime
   if enterTime and (usedTime > 0) then
     setLastLeavedTime(playerName, currTime)
     setUsedTime(playerName, usedTime)
