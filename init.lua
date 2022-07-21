@@ -102,6 +102,7 @@ local function get_formspec(player_name, quiz, session)
   local formspec = {
     "formspec_version[4]",
     "size[10,9]",
+    "label[0,0.2;", player_name, "]",
     "box[0.4,1.1;9.2,4.25;#999999]",
     "textarea[0.4,1.1;9.2,4.25;;",questionStr, ";" , title, "]",
   }
