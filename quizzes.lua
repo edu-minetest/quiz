@@ -169,6 +169,9 @@ local function check(playerName, answer, quiz)
         ok = true
       end
       if ok then
+        if vType == "calc" then
+          quiz.calc = nil
+        end
         local answeredName = quizId ..":answered"
         local answered = playerAttrs.getQuiz(attrs, answeredName)
         answered = answered + 1
@@ -189,7 +192,7 @@ local function check(playerName, answer, quiz)
 end
 
 local function getTitle(quiz)
-  if quiz["type"] == "calc" then
+  if quiz["type"] == "calc" and quiz["calc"] == nil then
     local expr = calcType.parse(quiz.answer, quiz.forceInt)
     quiz["calc"] = expr
     quiz["real_answer"] = calcType.execute(expr, true)
