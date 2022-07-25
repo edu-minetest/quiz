@@ -73,7 +73,7 @@ local function getCurrent(playerName)
 
   -- print('TCL:: ~ file: quizzes.lua ~ line 58 ~ getCurrent', currQuiz, dump(quiz));
   if (not quiz) then return nil, S("No such quiz Id: '@1'", currQuiz) end
-  if settings.skipAnswered and settings.skipAnswered > 0 then
+  if settings.skipAnswered and settings.skipAnswered > 0 and quiz.type ~= "calc" then
     local index = currQuiz
     local answered = playerAttrs.getQuiz(attrs, id(quiz)..":answered")
     while answered >= settings.skipAnswered and index < #quizzes do
