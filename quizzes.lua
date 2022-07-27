@@ -31,7 +31,7 @@ function Quizzes.clearAnswered()
 end
 
 local function id(quiz)
-  return quiz.id or minetest.sha1(quiz.title)
+  return quiz.id or minetest.sha1(quiz.answer)
 end
 
 local function setCurrent(playerName, index)
