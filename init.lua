@@ -429,7 +429,7 @@ local function checkGameTime(playerName)
         minetest.chat_send_player(playerName, S("Hi, @1", playerName) .. ".\n" ..
           S("Game time is over, please rest your eyes for at least @1 minutes.", restTimeMin) .. "\n" ..
           S("You should quit game.") .. "\n" ..
-          S("It will automatically exit after @1 minute.", kickDelay + extraDelay)
+          S("It will automatically exit after @1 minute.", (kickDelay + extraDelay) / 60)
         )
         minetest.after(kickDelay + extraDelay, function()
           kickPlayer(playerName, S("Game time is over, please rest your eyes for at least @1 minutes.", restTimeMin))
