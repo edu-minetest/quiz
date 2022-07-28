@@ -55,7 +55,7 @@ Sorry, the answer is not right, think it carefully=抱歉,你在仔细想想
 The rest time is not over, please continue to rest your eyes.=休息时间还没结束,请继续休息你的眼睛
 You have to rest for another @1 minutes.=你还要再休息@1分钟
 You should quit game.=你应该退出游戏
-It will automatically exit after 1 minute.=1分钟后自动退出
+It will automatically exit after @1 minute.=@1分钟后自动退出
 Game time is over, please rest your eyes for at least @1 minutes.=游戏时间结束,请休息您的眼睛至少@1分钟
 @1 has leaved=@1已经离开
 @1 may be offline= @1可能已离开
@@ -67,4 +67,3 @@ No such quiz Id: '@1'=无此问题: "@1"
 
 ##### not used anymore #####
 
-Game time is over, please rest your eyes.=游戏时间结束,请爱护您的眼睛
