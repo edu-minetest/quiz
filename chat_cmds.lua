@@ -1,6 +1,6 @@
 local minetest, quiz, yaml = minetest, quiz, yaml
 
-local log = minetest.log
+-- local log = minetest.log
 local S = quiz.get_translator
 local MOD_NAME = quiz.MOD_NAME
 local MOD_PATH = quiz.MOD_PATH
