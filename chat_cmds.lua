@@ -2,7 +2,7 @@ local minetest, quiz, yaml = minetest, quiz, yaml
 
 -- local log = minetest.log
 local S = quiz.get_translator
-local MOD_NAME = quiz.MOD_NAME
+-- local MOD_NAME = quiz.MOD_NAME
 local MOD_PATH = quiz.MOD_PATH
 local settings = quiz.settings
 local quizzes  = quiz.quizzes
@@ -10,6 +10,10 @@ local openQuizView = quiz.openQuizView
 
 local merge = dofile(MOD_PATH .. "merge_table.lua")
 local split = dofile(MOD_PATH .. "split.lua")
+
+local isInvalidQuiz = quiz.isInvalidQuiz
+local loadConfig = quiz.loadConfig
+local saveConfig = quiz.saveConfig
 
 local function findIndexBy(list, value, getValue)
   if type(getValue) == "string" then
@@ -43,10 +47,7 @@ minetest.register_chatcommand("loadQuiz", {
     quiz = true,
   },
   func = function(name, param)
-    local newSettings = yaml.readConfig(MOD_NAME, "config.yml")
-    if (type(newSettings) == "table") then
-      merge(settings, newSettings)
-      quizzes.clearAnswered()
+    if loadConfig() then
       return true, S("Quiz config file loaded.")
     else
       return false, S("Quiz config file loading failed.")
@@ -60,7 +61,7 @@ minetest.register_chatcommand("saveQuiz", {
     quiz = true,
   },
   func = function(name, param)
-    local result = yaml.writeConfig(settings, "config.yml", MOD_NAME)
+    local result = saveConfig()
     if result then
       return true, S("Quiz config file saved.")
     else
@@ -68,10 +69,6 @@ minetest.register_chatcommand("saveQuiz", {
     end
   end,
 })
-
-local function isInvalidQuiz(quiz)
-  return not quiz.title or quiz.title == "" or not quiz.answer or quiz.answer == ""
-end
 
 local function listQuiz()
   local quizList = settings.quiz
