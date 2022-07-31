@@ -41,6 +41,7 @@ local isOnline = dofile(MOD_PATH.."is_online.lua")
 
 -- collects the player's sessions
 local sessions = {}
+quiz.sessions = sessions
 
 local function getSession(playerName)
   local result = sessions[playerName]
@@ -391,7 +392,7 @@ quiz.openQuizView = openQuizView
 local function checkGameTime(playerName)
   local currTime = os.time()
   local kickDelay = settings.kickDelay or 60
-  local lastJoinTime = joinTime[playerName] or 0
+  -- local lastJoinTime = joinTime[playerName] or 0
   joinTime[playerName] = currTime
   -- local checkInterval = settings.checkInterval
   local lastLeavedTime = getLastLeavedTime(playerName) or currTime
