@@ -1,7 +1,9 @@
+local minetest, yaml, quiz = minetest, yaml, quiz
+
 -- Set by the mod to store and retrieve information.
 -- The information is persisted, so after a server restart the information is still available.
 local modstore = quiz.store
--- local MOD_NAME = quiz.MOD_NAME
+local MOD_NAME = quiz.MOD_NAME
 local MOD_PATH = quiz.MOD_PATH
 local S = quiz.get_translator
 local settings = quiz.settings
@@ -10,7 +12,10 @@ local logQuiz = quiz.logQuiz
 local toBool = dofile(MOD_PATH .. "to_bool.lua")
 -- local playerAttrs = dofile(MOD_PATH .. "player_attrs.lua")
 local calcType = dofile(MOD_PATH .. "calc_type.lua")
+local merge = dofile(MOD_PATH .. "merge_table.lua")
+
 -- local isArrayEqu = dofile(MOD_PATH .. "array.lua").equal
+quiz.calcType = calcType
 
 local getSession = quiz.getSession
 
@@ -22,6 +27,11 @@ local Quizzes = {}
 -- local currQuiz = 1
 -- if currQuiz == nil or currQuiz < 1 then currQuiz = 1 end
 -- local quizzes = settings.quiz
+
+local function isInvalidQuiz(quiz)
+  return not quiz.title or quiz.title == "" or not quiz.answer or quiz.answer == ""
+end
+quiz.isInvalidQuiz = isInvalidQuiz
 
 local function getLastCheckedTime(playerName)
   return getSession(playerName).lastChecked or 0
@@ -36,6 +46,33 @@ end
 function Quizzes.lastChecked(playerName)
   return getLastCheckedTime(playerName)
 end
+
+function Quizzes.clearAnswered()
+  local sessions = quiz.sessions
+  for _,v in ipairs(sessions) do
+    if v and v.lastChecked ~= nil then v.lastChecked = 0 end
+  end
+
+end
+
+local function loadConfig(filename)
+  if filename == nil then filename = "config.yml" end
+  local newSettings = yaml.readConfig(MOD_NAME, filename)
+  local result = false
+  if (type(newSettings) == "table") then
+    merge(settings, newSettings)
+    Quizzes.clearAnswered()
+    result = true
+  end
+  return result
+end
+quiz.loadConfig = loadConfig
+
+local function saveConfig(filename)
+  if filename == nil then filename = "config.yml" end
+  return yaml.writeConfig(settings, filename, MOD_NAME)
+end
+quiz.saveConfig = saveConfig
 
 local function id(quiz)
   local result = quiz.id
