@@ -370,7 +370,7 @@ local function openQuizView(playerName)
       local answerTime = os.time() - session.startQuizTime
       session.answerTime = answerTime
       if checkAnswer(playerName, state, quiz) then
-        session.extraDelay = (session.extraDelay or 0) + answerTime
+        session.extraDelay = (session.extraDelay or 0) + 60
       end
       session.fields = {}
     end
