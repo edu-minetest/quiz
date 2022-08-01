@@ -44,6 +44,9 @@ local sessions = {}
 quiz.sessions = sessions
 
 local function getSession(playerName)
+  if type(playerName) ~= "string" then
+    playerName = playerName:get_player_name()
+  end
   local result = sessions[playerName]
   if result == nil then
     result = {}
