@@ -341,6 +341,9 @@ local function checkAnswer(playerName, fields, quiz)
 end
 
 local function openQuizView(playerName)
+  local player = minetest.get_player_by_name(playerName)
+  if player and player:get_hp() <= 0 then return end
+
   -- if (not aPlayer) then return end
   -- local playerName = aPlayer:get_player_name()
   -- get the current quiz if no answer passed
