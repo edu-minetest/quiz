@@ -176,6 +176,8 @@ minetest.register_chatcommand("quiz", {
     local cmd = QuizCRUD[action]
     if type(cmd) == "function" then
       return cmd(params, name)
+    elseif type(quiz.defaultChatCmd) == "function" then
+      return quiz.defaultChatCmd(name, param)
     else
       return false, S("Invalid quiz action: @1", (action or ""))
     end
