@@ -27,7 +27,7 @@ local S = minetest.get_translator(MOD_NAME)
 --  escapes the characters "[", "]", "\", "," and ";", which can not be used in formspecs.
 local esc = minetest.formspec_escape
 
-local settings = yaml.readConfig(MOD_NAME, "config.yml")
+local settings = yaml.readConfig(MOD_NAME, "config.yml", {"quiz"})
 -- print(dump(mod_setting));
 
 quiz.MOD_NAME = MOD_NAME

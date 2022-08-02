@@ -57,10 +57,12 @@ end
 
 local function loadConfig(filename)
   if filename == nil then filename = "config.yml" end
-  local newSettings = yaml.readConfig(MOD_NAME, filename)
+  local newSettings = yaml.readConfig(MOD_NAME, filename, {"quiz"})
   local result = false
   if (type(newSettings) == "table") then
-    merge(settings, newSettings)
+    for k,v in pairs(newSettings) do
+      settings[k] = v
+    end
     Quizzes.clearAnswered()
     result = true
   end
