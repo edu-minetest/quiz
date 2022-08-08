@@ -194,6 +194,7 @@ local function check(playerName, answer, quiz)
     -- local attrs = player:get_meta()
     local quizId= id(quiz)
     if answer ~= nil then
+      answer = string.gsub(answer, "^%s*(.-)%s*$", "%1") --trim spaces
       local session = getSession(playerName)
       local vRealAnswer = quiz.answer
       local vType = quiz["type"] or type(vRealAnswer)
