@@ -448,7 +448,7 @@ end
 
 minetest.register_on_joinplayer(function(player)
   local playerName = player:get_player_name()
-  local isAdmin = minetest.check_player_privs(player, "quiz")
+  local isAdmin = minetest.check_player_privs(player, "quizAdmin")
 
   if settings.forceAdminRest or not isAdmin then checkGameTime(playerName) end
   -- minetest.is_singleplayer()

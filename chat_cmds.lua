@@ -27,6 +27,12 @@ local function findIndexBy(list, value, getValue)
 end
 
 minetest.register_privilege("quiz", {
+  description = S("skip to quiz"),
+  give_to_singleplayer = false, --< DO NOT defaults to singleplayer
+  give_to_admin = false,        --< DO NOT defaults to admin
+})
+
+minetest.register_privilege("quizAdmin", {
   description = S("manage to quiz"),
   give_to_singleplayer = false, --< DO NOT defaults to singleplayer
   give_to_admin = false,        --< DO NOT defaults to admin
