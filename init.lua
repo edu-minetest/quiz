@@ -415,7 +415,7 @@ local function checkGameTime(playerName)
         S("The rest time is not over, please continue to rest your eyes.") .. "\n" ..
         S("You have to rest for another @1 minutes.", leftRestTime) .. "\n" ..
         S("You should quit game.") .. "\n" ..
-        S("It will automatically exit after @1 minute.", kickDelay)
+        S("It will automatically exit after @1 minute.", kickDelay / 60)
       )
       minetest.after(kickDelay, function()
         kickPlayer(playerName, S("The rest time is not over, please continue to rest your eyes.") .. "\n" ..
