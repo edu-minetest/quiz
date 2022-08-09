@@ -407,10 +407,10 @@ local function checkGameTime(playerName)
   local realRestTime = currTime - lastLeavedTime
   -- print('TCL:: ~ file: init.lua ~ line 285 ~ register_on_joinplayer lastUsedTime', lastUsedTime);
   local leftPlayTime = settings.totalPlayTime * 60 - lastUsedTime
+  local leftRestTime = math.floor((restTime - realRestTime) / 60 + 0.5)
   -- print("register_on_joinplayer:", playerName, settings.restTime, totalPlayTime, lastLeavedTime)
-  if restTime > 0 and realRestTime < restTime then
+  if restTime > 0 and leftRestTime > 0 then
     if leftPlayTime <= 0 then
-      local leftRestTime = math.floor((restTime - realRestTime) / 60 + 0.5)
       minetest.chat_send_player(playerName, S("Hi, @1", playerName) .. ".\n" ..
         S("The rest time is not over, please continue to rest your eyes.") .. "\n" ..
         S("You have to rest for another @1 minutes.", leftRestTime) .. "\n" ..
