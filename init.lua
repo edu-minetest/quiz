@@ -448,7 +448,7 @@ end
 
 minetest.register_on_joinplayer(function(player)
   local playerName = player:get_player_name()
-  local isAdmin = minetest.check_player_privs(player, "quizAdmin")
+  local isAdmin = minetest.check_player_privs(player, "quiz")
 
   if settings.forceAdminRest or not isAdmin then checkGameTime(playerName) end
   -- minetest.is_singleplayer()
@@ -460,7 +460,9 @@ minetest.register_on_joinplayer(function(player)
     -- print("doCheck interval:", checkInterval)
 
     if (player) then hudcheck(playerName) end
-    local isNeedQuiz = type(playerName) == "string" and (not minetest.check_player_privs(playerName, "quiz") or settings.forceAdminQuiz)
+    local isNeedQuiz = type(playerName) == "string"
+      and not minetest.check_player_privs(playerName, "noquiz")
+      and (not minetest.check_player_privs(playerName, "quiz") or settings.forceAdminQuiz)
     if (session.dialogClosed and isNeedQuiz) then openQuizView(playerName) end
 
     if (checkInterval > 0) and isOnline(playerName) then
