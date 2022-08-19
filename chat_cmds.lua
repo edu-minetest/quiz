@@ -27,7 +27,7 @@ local function findIndexBy(list, value, getValue)
 end
 
 minetest.register_privilege("noquiz", {
-  description = S("skip to pop quiz"),
+  description = S("skip to popup quiz"),
   give_to_singleplayer = false, --< DO NOT defaults to singleplayer
   give_to_admin = false,        --< DO NOT defaults to admin
 })
@@ -157,7 +157,7 @@ local QuizCRUD = {
   delete = delQuiz,
   reset = function(param, playerName)
     if (type(param) == "string") and param ~= "" then playerName = param end
-    quiz.setLastLeavedTime(playerName, 0)
+    quiz.resetGameTime(playerName)
     return true, S("reset @1 successful", playerName)
   end,
   revoke = function(param, playerName)
@@ -168,6 +168,14 @@ local QuizCRUD = {
       minetest.set_player_privs(playerName, privs)
       return true, "revoke quiz ok."
     end
+  end,
+  left = function(param, playerName)
+    if (type(param) == "string") and param ~= "" then playerName = param end
+    local session = quiz.getSession(playerName)
+    local leftPlayTime = settings.totalPlayTime * 60
+      - (quiz.getUsedTime(playerName) or 0)
+      - (os.time() - session.joinTime)
+    return true, S("left play time: @1 seconds", leftPlayTime)
   end,
 }
 
