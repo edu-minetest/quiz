@@ -1,4 +1,5 @@
 # textdomain: quiz
+skip to popup quiz=
 answer the quiz=
 There are currently no quizs to answer=
 (Re)load quiz config file=
@@ -16,6 +17,7 @@ remove successfully=
 Invalid index value @1=
 Invalid id value @1=
 reset @1 successful=
+left play time: @1 seconds=
 <list|set|del|reset|revoke> [<index|id>, title@="Title", answer@="Answer"]=
 manage the quizzes=
 Invalid quiz action: @1=
@@ -67,5 +69,7 @@ No such quiz Id: '@1'=
 
 ##### not used anymore #####
 
+# textdomain: quiz
+skip to pop quiz=
 # textdomain: quiz
 Can't get =
