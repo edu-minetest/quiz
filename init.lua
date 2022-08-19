@@ -178,20 +178,19 @@ local cmdDesc = settings.cmdDesc or S("type /@1 your answer in chat window", cmd
 local hudline1 = settings.hudline1 or S("You must answer the question to play.")
 local hudline2 = settings.hudline2 or cmdDesc
 
-local huds = {}
-local allAnswered = {}
-local joinTime = {}
-
 local function resetWhenLeaving(playerName)
-  huds[playerName] = nil
-  allAnswered[playerName] = nil
-  local enterTime = joinTime[playerName] or 0
-  -- joinTime[playerName] = nil
+  local session = getSession(playerName)
+
+  local enterTime = session.joinTime or 0
   local currTime = os.time()
   local usedTime = currTime - enterTime
-  if enterTime and (usedTime >= 3 * 60) then
+  if enterTime then
     setLastLeavedTime(playerName, currTime)
-    setUsedTime(playerName, usedTime)
+    if usedTime >= settings.totalPlayTime * 60 then
+      setUsedTime(playerName, 0)
+    elseif usedTime >= 30 then
+      setUsedTime(playerName, usedTime)
+    end
   end
   clearSession(playerName)
 end
@@ -224,8 +223,9 @@ local function hudcheck(pname)
   minetest.after(0, function()
       local player = minetest.get_player_by_name(pname)
       if not player then return end
+      local session = getSession(pname)
 
-      local playerHud = huds[pname]
+      local playerHud = session.huds
 
       local hasPriv = minetest.check_player_privs(player, "interact")
 
@@ -236,14 +236,14 @@ local function hudcheck(pname)
             player:hud_remove(id)
           end
         end
-        huds[pname] = nil
+        session.huds = nil
         return
       end
 
       player:hud_set_flags({crosshair = false})
       if not playerHud then
         playerHud = {}
-        huds[pname] = playerHud
+        session.huds = playerHud
       end
       playerHud[1] = showHud(player, playerHud[1], -1, hudline1)
       if hudline2 and #hudline2 then
@@ -286,6 +286,7 @@ end
 
 local function checkAnswer(playerName, fields, quiz)
   local answer
+  local session = getSession(playerName)
   if quiz and quiz.type == "select" and #quiz.options then
     answer = {}
     local options = fields._options
@@ -304,10 +305,10 @@ local function checkAnswer(playerName, fields, quiz)
   if errmsg then
     if result then
       -- all questions are answered!
-      if not allAnswered[playerName] then
+      if not session.allAnswered then
         grantPriv(playerName)
         minetest.chat_send_all(errmsg)
-        allAnswered[playerName] = true
+        session.allAnswered = true
       end
       return true
     else
@@ -396,19 +397,20 @@ end
 quiz.openQuizView = openQuizView
 
 local function checkGameTime(playerName)
+  local session = getSession(playerName)
   local currTime = os.time()
   local kickDelay = settings.kickDelay or 60
   -- local lastJoinTime = joinTime[playerName] or 0
-  joinTime[playerName] = currTime
   -- local checkInterval = settings.checkInterval
   local lastLeavedTime = getLastLeavedTime(playerName) or currTime
   local lastUsedTime = getUsedTime(playerName) or 0
   local restTime = (settings.restTime or 0) * 60
   local realRestTime = currTime - lastLeavedTime
   -- print('TCL:: ~ file: init.lua ~ line 285 ~ register_on_joinplayer lastUsedTime', lastUsedTime);
+  session.totalPlayTime = settings.totalPlayTime
   local leftPlayTime = settings.totalPlayTime * 60 - lastUsedTime
   local leftRestTime = math.floor((restTime - realRestTime) / 60 + 0.5)
-  -- print("register_on_joinplayer:", playerName, settings.restTime, totalPlayTime, lastLeavedTime)
+  -- print("register_on_joinplayer:", playerName, settings.restTime, session.totalPlayTime, lastLeavedTime, restTime, leftRestTime)
   if restTime > 0 and leftRestTime > 0 then
     if leftPlayTime <= 0 then
       minetest.chat_send_player(playerName, S("Hi, @1", playerName) .. ".\n" ..
@@ -417,19 +419,22 @@ local function checkGameTime(playerName)
         S("You should quit game.") .. "\n" ..
         S("It will automatically exit after @1 minute.", kickDelay / 60)
       )
-      minetest.after(kickDelay, function()
+      if session.kickJob then session.kickJob:cancel() end
+      session.kickJob = minetest.after(kickDelay, function()
         kickPlayer(playerName, S("The rest time is not over, please continue to rest your eyes.") .. "\n" ..
           S("You have to rest for another @1 minutes.", leftRestTime)
         )
       end)
+      return
     end
   else
     leftPlayTime = settings.totalPlayTime * 60
   end
+  -- print("checkGameTime", leftPlayTime, "seconds")
   if leftPlayTime > 0 then
-    local session = getSession(playerName)
     setUsedTime(playerName, 0)
-    minetest.after(leftPlayTime, function()
+    if session.kickJob then session.kickJob:cancel() end
+    session.kickJob = minetest.after(leftPlayTime, function()
       if isOnline(playerName) then
         local restTimeMin = math.modf(restTime / 60)
         local extraDelay = session.extraDelay or 0
@@ -445,15 +450,30 @@ local function checkGameTime(playerName)
     end)
   end
 end
+quiz.checkGameTime = checkGameTime
+
+local function resetGameTime(playerName)
+  if playerName then
+    setLastLeavedTime(playerName, 0)
+    setUsedTime(playerName, 0)
+    local player = minetest.get_player_by_name(playerName)
+    if player then
+      local isAdmin = minetest.check_player_privs(player, "quiz")
+      if settings.forceAdminRest or not isAdmin then checkGameTime(playerName) end
+    end
+  end
+end
+quiz.resetGameTime = resetGameTime
 
 minetest.register_on_joinplayer(function(player)
   local playerName = player:get_player_name()
   local isAdmin = minetest.check_player_privs(player, "quiz")
+  local session = getSession(playerName)
+  session.joinTime = os.time()
 
   if settings.forceAdminRest or not isAdmin then checkGameTime(playerName) end
   -- minetest.is_singleplayer()
   if isAdmin then return end
-  local session = getSession(playerName)
 
   local function doCheck()
     local checkInterval = settings.checkInterval
