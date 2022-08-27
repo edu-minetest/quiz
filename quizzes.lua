@@ -164,6 +164,10 @@ local function incValue(session, key)
   session[key] = value + 1
 end
 
+local function trim(s)
+  string.gsub(s, "^%s*(.-)%s*$", "%1") --trim spaces
+end
+
 local function check(playerName, answer, quiz)
   -- print('TCL:: ~ file: quizzes.lua ~ line 108 ~ check - playerName, answer, quiz', playerName, answer, dump(quiz));
   if not quiz and not answer then
@@ -194,7 +198,7 @@ local function check(playerName, answer, quiz)
     -- local attrs = player:get_meta()
     local quizId= id(quiz)
     if answer ~= nil then
-      answer = string.gsub(answer, "^%s*(.-)%s*$", "%1") --trim spaces
+      answer = trim(answer) --trim spaces
       local session = getSession(playerName)
       local vRealAnswer = quiz.answer
       local vType = quiz["type"] or type(vRealAnswer)
@@ -219,6 +223,13 @@ local function check(playerName, answer, quiz)
         if type(vRealAnswer) == "table" then
           table.sort(vRealAnswer)
           vRealAnswer = table.concat(vRealAnswer, ",")
+        elseif type(vRealAnswer) == "string" then
+          local t = string.split(vRealAnswer, ",")
+          for i=1, #t do
+            t[i] = tonumber(trim(t[i]))
+          end
+          table.sort(t)
+          vRealAnswer = table.concat(t, ",")
         else
           vRealAnswer = "" .. vRealAnswer
         end
