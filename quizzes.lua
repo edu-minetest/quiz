@@ -165,7 +165,7 @@ local function incValue(session, key)
 end
 
 local function trim(s)
-  string.gsub(s, "^%s*(.-)%s*$", "%1") --trim spaces
+  return string.gsub(s, "^%s*(.-)%s*$", "%1") --trim spaces
 end
 
 local function check(playerName, answer, quiz)
