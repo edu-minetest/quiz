@@ -106,6 +106,7 @@ local function logQuiz(playerName, quiz, answer, ok)
   local content = {}
   if quiz.type == "calc" then
     content["title"] = quiz.calc
+    -- content["real_answer"] = quiz["real_answer"]
   else
     content["title"] = quiz.title
   end
@@ -360,7 +361,8 @@ local function openQuizView(playerName)
     local session = getSession(playerName)
     state = getFields(playerName, session)
     mergeTable(state, fields)
-    -- print('TCL:: ~ file: init.lua ~ line 288 ~ onclose player:', playerName, dump(state));
+    -- print('TCL:: ~ file: init.lua ~ line 364 ~ onclose player fields:', playerName, dump(fields));
+    -- print('TCL:: ~ file: init.lua ~ line 365 ~ onclose player state:', playerName, dump(state));
     if fields.quit == minetest.FORMSPEC_SIGTIME then -- timeout reached
       local vQuiz, vErrmsg = quizzes.getCurrent(playerName)
       if vQuiz and not vErrmsg then
