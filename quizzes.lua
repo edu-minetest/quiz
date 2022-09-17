@@ -247,7 +247,7 @@ local function check(playerName, answer, quiz)
           quiz.calc = nil
         end
 
-        local answeredName = quizId ..":answered"
+        local answeredName = (quizId or "") ..":answered"
         incValue(session, answeredName)
 
         -- local answered = playerAttrs.getQuiz(attrs, answeredName)
@@ -258,7 +258,7 @@ local function check(playerName, answer, quiz)
         next(playerName)
         return true
       else
-        local wrongName = quizId .. ":wrong"
+        local wrongName = (quizId or "") .. ":wrong"
         incValue(session, wrongName)
         -- local wrong = playerAttrs.getQuiz(attrs, wrongName)
         -- wrong = wrong + 1
