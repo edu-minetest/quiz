@@ -1,5 +1,5 @@
-unused_args = false
-allow_defined_top = true
+-- unused_args = false
+-- allow_defined_top = true
 
 globals = {
     "minetest",
