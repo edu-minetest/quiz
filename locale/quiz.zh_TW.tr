@@ -42,8 +42,6 @@ whether skip the correct answered=是否跳過已經正確回答的
 whether force the administrator reset too=是否強製管理員也休息
 whether force the administrator answer quiz too=是否強製管理員也回答問題
 whether ask the quiz immediately after joining the game=是否在進入遊戲後立即提問
-manage to quiz=管理測驗
-Answer=答
 Can't get '@1'= 無法獲取"@1"
 You get the @1, count: @2.= 你得到了 @1, 數量: @2
 Hi, @1= 你好, @1
@@ -54,14 +52,26 @@ type /@1 your answer in chat window=在聊天視窗輸入 /@1 你的回答
 You must answer the question to play.=你必須回答正確才可以玩
 Congratuation @1, you got the answer!=恭喜 @1, 回答正確!
 Sorry, the answer is not right, think it carefully=抱歉,你在仔細想想
+@1 day(s)=@1天
+@1 hour(s)=@1小時
+@1 minute(s)=@1分鍾
+@1 second(s)=@1秒
 The rest time is not over, please continue to rest your eyes.=休息時間還冇結束,請繼續休息你的眼睛
 You have to rest for another @1 minutes.=你還要再休息 @1 分鍾
 You should quit game.=你應該退出遊戲
-It will automatically exit after @1 minute.=@1分鍾後自動退出
+It will automatically exit after @1.=@1後自動退出.
+You have to rest for another @1.=您還應該再休息@1.
 Game time is over, please rest your eyes for at least @1 minutes.=遊戲時間結束,請休息您的眼睛至少 @1 分鍾
 @1 has leaved=@1 已經離開
+manage to quiz=管理測驗
+Answer=答
 @1 may be offline= @1可能已離開
 No any quiz defined=冇有測試
 invalid quiz=無效問題
 No such quiz Id: '@1'=無此問題: "@1"
 @1 answered all the questions correctly.= 恭喜, @1 把所有問題都回答正確了!
+
+
+##### not used anymore #####
+
+It will automatically exit after @1 minute.=@1分鍾後自動退出

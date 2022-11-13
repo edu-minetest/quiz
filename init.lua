@@ -2,6 +2,7 @@
 -- LUALOCALS < ---------------------------------------------------------
 local minetest, pairs, type
     = minetest, pairs, type
+local floor, mod = math.floor, math.mod
 -- LUALOCALS > ---------------------------------------------------------
 
 local MOD_NAME = minetest.get_current_modname()
@@ -11,13 +12,33 @@ if rawget(_G, MOD_NAME) then return end
 quiz = {}
 minetest.log("info", "Loading quiz Mod")
 
+-- Handle mod security if needed
+local ie, req_ie = _G, minetest.request_insecure_environment
+if req_ie then ie = req_ie() end
+quiz.trusted = not not ie
+
 -- local defaultS = default.get_translator
 
 local mkdir = minetest.mkdir
 local store = minetest.get_mod_storage()
 local MOD_PATH = minetest.get_modpath(MOD_NAME) .. "/"
 local WORLD_PATH = minetest.get_worldpath() .. "/"
-local STUDENTS_PATH = WORLD_PATH .. "/quiz/students/"
+local STUDENTS_PATH = WORLD_PATH .. "quiz/students/"
+
+local function isWritenModDir()
+  local modName = minetest.get_current_modname()
+  return not not modName
+end
+
+if type(minetest.get_mod_data_path) == "function" then
+  STUDENTS_PATH = minetest.get_mod_data_path() .. "/students/"
+elseif isWritenModDir() then
+  if ie then
+    STUDENTS_PATH = string.match(WORLD_PATH, "(.*/)worlds/.*/") .. "mod_data/students/"
+  else
+    STUDENTS_PATH = MOD_PATH .. "students/"
+  end
+end
 
 local mergeTable = dofile(MOD_PATH .. "merge_table.lua")
 local array = dofile(MOD_PATH .. "array.lua")
@@ -99,6 +120,7 @@ end
 quiz.setUsedTime = setUsedTime
 
 local function logQuiz(playerName, quiz, answer, ok)
+  print("logQuiz: current mod name:", minetest.get_current_modname())
   local session = getSession(playerName)
   local logDir = STUDENTS_PATH .. playerName
   local logFile =  logDir .. "/quiz-log.yml"
@@ -375,7 +397,7 @@ local function openQuizView(playerName)
     if fields.quit == "true" then
       local answerTime = os.time() - session.startQuizTime
       session.answerTime = answerTime
-      if checkAnswer(playerName, state, quiz) then
+      if checkAnswer(playerName, state, quiz) and answerTime <= 60 then
         session.extraDelay = (session.extraDelay or 0) + 60
       end
       session.fields = {}
@@ -398,6 +420,23 @@ local function openQuizView(playerName)
 end
 quiz.openQuizView = openQuizView
 
+local function disp_time(time)
+  local result = ""
+  if time < 0 then
+    result = "- "
+    time = -time
+  end
+  local days = floor(time/86400)
+  if days > 0 then result = result .. S("@1 day(s)", days) end
+  local hours = floor(mod(time, 86400)/3600)
+  if hours > 0 then result = result .. " " .. S("@1 hour(s)", hours) end
+  local minutes = floor(mod(time,3600)/60)
+  if minutes > 0 then result = result .. " " .. S("@1 minute(s)", minutes) end
+  local seconds = floor(mod(time,60))
+  if seconds > 0 then result = result .. " " .. S("@1 second(s)", seconds) end
+  return result
+end
+
 local function checkGameTime(playerName)
   local session = getSession(playerName)
   local currTime = os.time()
@@ -411,20 +450,20 @@ local function checkGameTime(playerName)
   -- print('TCL:: ~ file: init.lua ~ line 285 ~ register_on_joinplayer lastUsedTime', lastUsedTime);
   session.totalPlayTime = settings.totalPlayTime
   local leftPlayTime = settings.totalPlayTime * 60 - lastUsedTime
-  local leftRestTime = math.floor((restTime - realRestTime) / 60 + 0.5)
+  local leftRestTime = floor((restTime - realRestTime) + 0.5)
   -- print("register_on_joinplayer:", playerName, settings.restTime, session.totalPlayTime, lastLeavedTime, restTime, leftRestTime)
   if restTime > 0 and leftRestTime > 0 then
     if leftPlayTime <= 0 then
       minetest.chat_send_player(playerName, S("Hi, @1", playerName) .. ".\n" ..
         S("The rest time is not over, please continue to rest your eyes.") .. "\n" ..
-        S("You have to rest for another @1 minutes.", leftRestTime) .. "\n" ..
+        S("You have to rest for another @1 minutes.", disp_time(leftRestTime)) .. "\n" ..
         S("You should quit game.") .. "\n" ..
-        S("It will automatically exit after @1 minute.", kickDelay / 60)
+        S("It will automatically exit after @1.", kickDelay / 60)
       )
       if session.kickJob then session.kickJob:cancel() end
       session.kickJob = minetest.after(kickDelay, function()
         kickPlayer(playerName, S("The rest time is not over, please continue to rest your eyes.") .. "\n" ..
-          S("You have to rest for another @1 minutes.", leftRestTime)
+          S("You have to rest for another @1.", disp_time(leftRestTime))
         )
       end)
       return
@@ -443,7 +482,7 @@ local function checkGameTime(playerName)
         minetest.chat_send_player(playerName, S("Hi, @1", playerName) .. ".\n" ..
           S("Game time is over, please rest your eyes for at least @1 minutes.", restTimeMin) .. "\n" ..
           S("You should quit game.") .. "\n" ..
-          S("It will automatically exit after @1 minute.", (kickDelay + extraDelay) / 60)
+          S("It will automatically exit after @1.", disp_time(kickDelay + extraDelay))
         )
         minetest.after(kickDelay + extraDelay, function()
           kickPlayer(playerName, S("Game time is over, please rest your eyes for at least @1 minutes.", restTimeMin))
