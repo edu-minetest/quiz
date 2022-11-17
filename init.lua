@@ -443,7 +443,7 @@ end
 local function checkGameTime(playerName)
   local session = getSession(playerName)
   local currTime = os.time()
-  local kickDelay = settings.kickDelay or 60
+  local kickDelay = settings.kickDelay or 1
   -- local lastJoinTime = joinTime[playerName] or 0
   -- local checkInterval = settings.checkInterval
   local lastLeavedTime = getLastLeavedTime(playerName) or currTime
@@ -467,11 +467,17 @@ local function checkGameTime(playerName)
         session.kickJob:cancel()
         session.kickJob = nil
       end
-      session.kickJob = minetest.after(kickDelay, function()
+      if kickDelay == 0 then
         kickPlayer(playerName, S("The rest time is not over, please continue to rest your eyes.") .. "\n" ..
           S("You have to rest for another @1.", disp_time(leftRestTime))
         )
-      end)
+      elseif kickDelay > 0 then
+        session.kickJob = minetest.after(kickDelay, function()
+          kickPlayer(playerName, S("The rest time is not over, please continue to rest your eyes.") .. "\n" ..
+            S("You have to rest for another @1.", disp_time(leftRestTime))
+          )
+        end)
+      end
       return
     end
   else
