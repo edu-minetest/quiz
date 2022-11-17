@@ -1,4 +1,5 @@
 # minetest_game to mineclone2 mapper
+# mods/ITEMS/mcl_core/craftitems.lua
 "default:coalblock":
   id: "mcl_core:coalblock"
 "default:wood":
@@ -10,3 +11,8 @@
 "default:steel_ingot":
   id: "mcl_core:iron_ingot"
   title: "Iron Ingot"
+"default:diamond":
+  id: "mcl_core:diamond"
+"default:apple":
+  id: "mcl_core:apple_gold_enchanted"
+  title: "Enchanted Golden Apple"
