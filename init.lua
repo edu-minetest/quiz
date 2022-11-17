@@ -1,7 +1,7 @@
 -- quiz/init.lua
 -- LUALOCALS < ---------------------------------------------------------
-local minetest, pairs, type
-    = minetest, pairs, type
+local minetest, pairs, type, DIR_DELIM
+    = minetest, pairs, type, DIR_DELIM
 local floor, mod = math.floor, math.mod
 -- LUALOCALS > ---------------------------------------------------------
 
@@ -21,9 +21,9 @@ quiz.trusted = not not ie
 
 local mkdir = minetest.mkdir
 local store = minetest.get_mod_storage()
-local MOD_PATH = minetest.get_modpath(MOD_NAME) .. "/"
-local WORLD_PATH = minetest.get_worldpath() .. "/"
-local STUDENTS_PATH = WORLD_PATH .. "quiz/students/"
+local MOD_PATH = minetest.get_modpath(MOD_NAME) .. DIR_DELIM
+local WORLD_PATH = minetest.get_worldpath() .. DIR_DELIM
+local STUDENTS_PATH = WORLD_PATH .. MOD_NAME .. DIR_DELIM .."students" .. DIR_DELIM
 
 local function isWritenModDir()
   local modName = minetest.get_current_modname()
@@ -31,12 +31,15 @@ local function isWritenModDir()
 end
 
 if type(minetest.get_mod_data_path) == "function" then
-  STUDENTS_PATH = minetest.get_mod_data_path() .. "/students/"
+  STUDENTS_PATH = minetest.get_mod_data_path() .. DIR_DELIM .. "students" .. DIR_DELIM
 elseif isWritenModDir() then
-  if ie then
-    STUDENTS_PATH = string.match(WORLD_PATH, "(.*/)worlds/.*/") .. "mod_data/students/"
+  if ie then -- write to mod_data directory
+    -- "(.*/)worlds/.*/": get minetest main directory
+    local pattern = "(.*" .. DIR_DELIM .. ")worlds" .. DIR_DELIM .. ".*" .. DIR_DELIM
+    STUDENTS_PATH = string.match(WORLD_PATH, pattern) .. "mod_data" .. DIR_DELIM ..
+      MOD_NAME .. DIR_DELIM .. "students" .. DIR_DELIM
   else
-    STUDENTS_PATH = MOD_PATH .. "students/"
+    STUDENTS_PATH = MOD_PATH .. "students" .. DIR_DELIM
   end
 end
 
@@ -460,7 +463,10 @@ local function checkGameTime(playerName)
         S("You should quit game.") .. "\n" ..
         S("It will automatically exit after @1.", kickDelay / 60)
       )
-      if session.kickJob then session.kickJob:cancel() end
+      if session.kickJob then
+        session.kickJob:cancel()
+        session.kickJob = nil
+      end
       session.kickJob = minetest.after(kickDelay, function()
         kickPlayer(playerName, S("The rest time is not over, please continue to rest your eyes.") .. "\n" ..
           S("You have to rest for another @1.", disp_time(leftRestTime))
