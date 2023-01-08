@@ -430,11 +430,11 @@ local function disp_time(time)
   end
   local days = math.floor(time/86400)
   if days > 0 then result = result .. S("@1 day(s)", days) end
-  local hours = math.floor(math.mod(time, 86400)/3600)
+  local hours = math.floor(math.fmod(time, 86400)/3600)
   if hours > 0 then result = result .. " " .. S("@1 hour(s)", hours) end
-  local minutes = math.floor(math.mod(time,3600)/60)
+  local minutes = math.floor(math.fmod(time,3600)/60)
   if minutes > 0 then result = result .. " " .. S("@1 minute(s)", minutes) end
-  local seconds = math.floor(math.mod(time,60))
+  local seconds = math.floor(math.fmod(time,60))
   if seconds > 0 then result = result .. " " .. S("@1 second(s)", seconds) end
   return result
 end
