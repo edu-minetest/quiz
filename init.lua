@@ -2,7 +2,6 @@
 -- LUALOCALS < ---------------------------------------------------------
 local minetest, pairs, type, DIR_DELIM
     = minetest, pairs, type, DIR_DELIM
-local floor, mod = math.floor, math.mod
 -- LUALOCALS > ---------------------------------------------------------
 
 local MOD_NAME = minetest.get_current_modname()
@@ -123,7 +122,7 @@ end
 quiz.setUsedTime = setUsedTime
 
 local function logQuiz(playerName, quiz, answer, ok)
-  print("logQuiz: current mod name:", minetest.get_current_modname())
+  -- print("logQuiz: current mod name:", minetest.get_current_modname())
   local session = getSession(playerName)
   local logDir = STUDENTS_PATH .. playerName
   local logFile =  logDir .. "/quiz-log.yml"
@@ -429,13 +428,13 @@ local function disp_time(time)
     result = "- "
     time = -time
   end
-  local days = floor(time/86400)
+  local days = math.floor(time/86400)
   if days > 0 then result = result .. S("@1 day(s)", days) end
-  local hours = floor(mod(time, 86400)/3600)
+  local hours = math.floor(math.mod(time, 86400)/3600)
   if hours > 0 then result = result .. " " .. S("@1 hour(s)", hours) end
-  local minutes = floor(mod(time,3600)/60)
+  local minutes = math.floor(math.mod(time,3600)/60)
   if minutes > 0 then result = result .. " " .. S("@1 minute(s)", minutes) end
-  local seconds = floor(mod(time,60))
+  local seconds = math.floor(math.mod(time,60))
   if seconds > 0 then result = result .. " " .. S("@1 second(s)", seconds) end
   return result
 end
@@ -453,13 +452,13 @@ local function checkGameTime(playerName)
   -- print('TCL:: ~ file: init.lua ~ line 285 ~ register_on_joinplayer lastUsedTime', lastUsedTime);
   session.totalPlayTime = settings.totalPlayTime
   local leftPlayTime = settings.totalPlayTime * 60 - lastUsedTime
-  local leftRestTime = floor((restTime - realRestTime) + 0.5)
+  local leftRestTime = math.floor((restTime - realRestTime) + 0.5)
   -- print("register_on_joinplayer:", playerName, settings.restTime, session.totalPlayTime, lastLeavedTime, restTime, leftRestTime)
   if restTime > 0 and leftRestTime > 0 then
     if leftPlayTime <= 0 then
       minetest.chat_send_player(playerName, S("Hi, @1", playerName) .. ".\n" ..
         S("The rest time is not over, please continue to rest your eyes.") .. "\n" ..
-        S("You have to rest for another @1 minutes.", disp_time(leftRestTime)) .. "\n" ..
+        S("You have to rest for another @1.", disp_time(leftRestTime)) .. "\n" ..
         S("You should quit game.") .. "\n" ..
         S("It will automatically exit after @1.", kickDelay / 60)
       )
