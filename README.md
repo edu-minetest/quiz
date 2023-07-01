@@ -107,3 +107,7 @@ quiz:
    * `options`: list items to be selected.
    * `answer`: the sequence number of the correct option.
      * **Note**: must sort from small to large
+
+## License
+
+MIT
