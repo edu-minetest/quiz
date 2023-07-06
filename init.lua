@@ -545,7 +545,7 @@ minetest.register_on_joinplayer(function(player)
     end
   end
 
-  local delay = 0
+  local delay = settings.immediateDelay or 30
   if settings.immediateQuiz == false then
     delay = (settings.idleInterval or 5) * 60 --> defaults to 5 min.
   end

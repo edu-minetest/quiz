@@ -29,6 +29,7 @@ When logging in, check whether you have enough rest time, based on the recorded 
   * `checkInterval [<seconds>]`: get or set the interval time to check quiz.
   * `forceAdminQuiz [true|false]`: get or set the whether force the administrator answer the quiz too. defaults to false.
   * `immediateQuiz [true|false]`: get or set the whether ask the quiz immediately after joining the game. defaults to true.
+  * `immediateDelay [seconds]`: get or set the delay time to ask the quiz immediately after joining the game. defaults to 30.
 
 Put the `quiz_config.yml` file in world folder:
 
