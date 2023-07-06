@@ -312,6 +312,7 @@ end
 local function checkAnswer(playerName, fields, quiz)
   local answer
   local session = getSession(playerName)
+  if not session.online then return end
   if quiz and quiz.type == "select" and #quiz.options then
     answer = {}
     local options = fields._options
@@ -368,7 +369,7 @@ end
 
 local function openQuizView(playerName)
   local player = minetest.get_player_by_name(playerName)
-  if player and player:get_hp() <= 0 then return end
+  if not player or player:get_hp() <= 0 then return end
 
   -- if (not aPlayer) then return end
   -- local playerName = aPlayer:get_player_name()
@@ -522,6 +523,7 @@ minetest.register_on_joinplayer(function(player)
   local isAdmin = minetest.check_player_privs(player, "quiz")
   local session = getSession(playerName)
   session.joinTime = os.time()
+  session.online = true
 
   if settings.forceAdminRest or not isAdmin then checkGameTime(playerName) end
   -- minetest.is_singleplayer()
@@ -561,6 +563,9 @@ end)
 
 minetest.register_on_leaveplayer(function(player)
   local playerName = player:get_player_name()
+  local session = getSession(playerName)
+  session.online = nil
+  grantPriv(playerName)
   resetWhenLeaving(playerName)
   minetest.log("info", S("@1 has leaved", playerName))
   minetest.chat_send_all(S("@1 has leaved", playerName))
