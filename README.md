@@ -47,6 +47,14 @@ skipAnswered: 1
 checkInterval: 5
 # idleInterval unit is minute
 idleInterval: 5
+# Whether to force the administrator to rest
+forceAdminRest: false
+# Whether to force the administrator to quiz
+forceAdminQuiz: false
+# If set to True, the quiz will be asked immediately after joining the game with a delay of `immediateDelay` seconds.
+immediateQuiz: true
+# the delay time(seconds) to ask the quiz immediately when immediateQuiz is True.
+immediateDelay: 30
 # the delay time to kick off, unit is second
 kickDelay: 2
 # the awards to give
