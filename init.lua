@@ -31,15 +31,19 @@ end
 
 if type(minetest.get_mod_data_path) == "function" then
   STUDENTS_PATH = minetest.get_mod_data_path() .. DIR_DELIM .. "students" .. DIR_DELIM
+--[[
 elseif isWritenModDir() then
   if ie then -- write to mod_data directory
     -- "(.*/)worlds/.*/": get minetest main directory
     local pattern = "(.*" .. DIR_DELIM .. ")worlds" .. DIR_DELIM .. ".*" .. DIR_DELIM
-    STUDENTS_PATH = string.match(WORLD_PATH, pattern) .. "mod_data" .. DIR_DELIM ..
-      MOD_NAME .. DIR_DELIM .. "students" .. DIR_DELIM
+    local p = string.match(WORLD_PATH, pattern)
+    local modDataDir =  "mod_data" .. DIR_DELIM .. MOD_NAME .. DIR_DELIM
+    if p ~= nil then modDataDir = p .. modDataDir end
+    STUDENTS_PATH = modDataDir .. "students" .. DIR_DELIM
   else
     STUDENTS_PATH = MOD_PATH .. "students" .. DIR_DELIM
   end
+--]]
 end
 
 local mergeTable = dofile(MOD_PATH .. "merge_table.lua")
